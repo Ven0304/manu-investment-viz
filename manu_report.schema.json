@@ -1,0 +1,408 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MANU 投资研究报告 - 结构化数据 Schema",
+  "description": "把西安交大投资研究报告(曼联 MANU)从人读文本转为机器可读数据资产的字段定义。本schema用于本地webapp的可视化展示,不承载后端/数据库语义。",
+  "type": "object",
+
+  "$defs": {
+    "MonetaryAmount": {
+      "type": "object",
+      "description": "任何金额字段都应使用此结构,不依赖全局货币假设。原文档中英镑(第三章财务历史)与欧元(第四章FCFF模型)混用,故每个金额对象自带货币单位。",
+      "properties": {
+        "value": { "type": "number" },
+        "currency": { "type": "string", "enum": ["GBP", "EUR", "USD"] },
+        "unit": { "type": "string", "enum": ["million", "billion"], "default": "million" }
+      },
+      "required": ["value", "currency"]
+    },
+
+    "TimeSeries": {
+      "type": "object",
+      "description": "多年度数值序列,用于财务历史、FCFF预测等趋势图表数据源。",
+      "properties": {
+        "currency": { "type": "string", "enum": ["GBP", "EUR", "USD"] },
+        "unit": { "type": "string", "enum": ["million", "billion"], "default": "million" },
+        "years": { "type": "array", "items": { "type": ["string", "integer"] } },
+        "values": { "type": "array", "items": { "type": ["number", "null"] } }
+      },
+      "required": ["currency", "years", "values"]
+    },
+
+    "SwotItem": {
+      "type": "object",
+      "description": "折中方案:不逐条拆解为多个子字段,只加一个主题标签(tag)方便前端分组/筛选,原文语义保持整句,不强行拆出未明确给出的数值。",
+      "properties": {
+        "tag": { "type": "string", "description": "简短主题标签,如'转播收入韧性'" },
+        "text": { "type": "string", "description": "原文对应的完整表述,轻度改写以保持可读性,不得编造数据" }
+      },
+      "required": ["tag", "text"]
+    },
+
+    "DataQualityNote": {
+      "type": "object",
+      "description": "用于记录原文本身存在的数据不一致之处,不擅自修正原文,只做标注。",
+      "properties": {
+        "path": { "type": "string", "description": "指向存在问题的字段路径,如 valuation.fcff_model.enterprise_value" },
+        "issue": { "type": "string", "description": "问题描述" },
+        "values_found": { "type": "array", "items": {}, "description": "原文中出现的所有冲突数值" }
+      },
+      "required": ["path", "issue", "values_found"]
+    }
+  },
+
+  "properties": {
+
+    "meta": {
+      "type": "object",
+      "description": "报告元信息",
+      "properties": {
+        "report_title": { "type": "string" },
+        "subject_company": { "type": "string" },
+        "ticker": { "type": "string" },
+        "author": { "type": "string" },
+        "institution": { "type": "string" },
+        "source_language": { "type": "string", "const": "zh" }
+      }
+    },
+
+    "data_quality_notes": {
+      "type": "array",
+      "description": "集中记录原文中已发现的数据矛盾/口径不一致,不擅自修正原文,只做标注。已知四处案例,codex抽取时需逐一填入values_found: (1) 4.2.4节企业价值先算出31.4亿欧元、后称'修正后'为42.87亿欧元,调整过程未展开; (2) 4.1节正文称估值倍数'4.39',同段落表格计算值实为4.27; (3) 3.2.1节调整后EBITDA桥接项(期间亏损-33.0,税项-6.6,净财务成本+21.2,摊销+190.1,折旧+14.2,例外项目+47.8)按原文方式加总为233.7,与原文最终结果182.8不符,但182.8本身被净负债/EBITDA=4.1x及利息保障倍数8.6x两处独立反算验证为正确,故判断是六个加总子项的列示有误,而非最终结果错; (4) 4.2.3节FCFF五年现值(15.1/16.7/19.1/19.5/15.8)实际加总为86.2,但原文'合计'栏写为5.72,与后续企业价值计算(5.72+25.68=31.4亿)所用单位不一致。",
+      "items": { "$ref": "#/$defs/DataQualityNote" }
+    },
+
+    "executive_summary": {
+      "type": "object",
+      "properties": {
+        "rating": { "type": "string" },
+        "target_price_usd": { "$ref": "#/$defs/MonetaryAmount" },
+        "target_price_eur": { "$ref": "#/$defs/MonetaryAmount" },
+        "current_price_usd": { "$ref": "#/$defs/MonetaryAmount" },
+        "upside_pct": { "type": "number" },
+        "fx_rate_eur_usd": { "type": "number", "description": "报告使用的2026年1月均值汇率" },
+        "core_thesis": { "type": "array", "items": { "type": "string" } },
+        "key_financials_summary": {
+          "type": "object",
+          "properties": {
+            "adjusted_ebitda_fy2025": { "$ref": "#/$defs/MonetaryAmount" },
+            "net_debt": { "$ref": "#/$defs/MonetaryAmount" },
+            "net_loss_note": { "type": "string" }
+          }
+        },
+        "risk_factors": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "company_profile": {
+      "type": "object",
+      "properties": {
+        "ticker": { "type": "string" },
+        "exchange": { "type": "string" },
+        "incorporation": { "type": "string" },
+        "headquarters": { "type": "string" },
+        "global_fanbase_estimate": { "type": "string", "description": "原文为约数,保留文本形式而非强行取整为数值" },
+        "market_cap": { "$ref": "#/$defs/MonetaryAmount" }
+      }
+    },
+
+    "ownership_structure": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "holder": { "type": "string" },
+          "economic_stake_pct": { "type": "number" },
+          "voting_power_pct": { "type": ["number", "null"] },
+          "share_class": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+
+    "core_assets": {
+      "type": "object",
+      "properties": {
+        "old_trafford": {
+          "type": "object",
+          "properties": {
+            "current_capacity": { "type": "integer" },
+            "expansion_options": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string" },
+                  "estimated_cost": { "$ref": "#/$defs/MonetaryAmount" },
+                  "new_capacity": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "carrington_training_ground": {
+          "type": "object",
+          "properties": {
+            "renovation_cost": { "$ref": "#/$defs/MonetaryAmount" },
+            "note": { "type": "string" }
+          }
+        },
+        "player_registration_intangibles": {
+          "type": "object",
+          "properties": {
+            "as_of_date": { "type": "string" },
+            "amount": { "$ref": "#/$defs/MonetaryAmount" }
+          }
+        }
+      }
+    },
+
+    "revenue_breakdown_fy2025": {
+      "type": "object",
+      "description": "字段结构与financial_history.series中对应年份的数字重复,属于有意保留的冗余(概览类板块自带当年数字,前端渲染时不必跨节点取数)",
+      "properties": {
+        "commercial": {
+          "type": "object",
+          "properties": {
+            "value": { "type": "number" },
+            "currency": { "type": "string", "const": "GBP" },
+            "pct_of_total": { "type": "number" }
+          }
+        },
+        "broadcasting": { "$ref": "#/$defs/MonetaryAmount" },
+        "matchday": { "$ref": "#/$defs/MonetaryAmount" }
+      }
+    },
+
+    "key_sponsorships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "partner": { "type": "string" },
+          "annual_value": { "$ref": "#/$defs/MonetaryAmount" },
+          "term_years": { "type": ["integer", "null"] },
+          "risk_clause": { "type": "string" }
+        }
+      }
+    },
+
+    "swot": {
+      "type": "object",
+      "properties": {
+        "strengths": { "type": "array", "items": { "$ref": "#/$defs/SwotItem" } },
+        "weaknesses": { "type": "array", "items": { "$ref": "#/$defs/SwotItem" } },
+        "opportunities": { "type": "array", "items": { "$ref": "#/$defs/SwotItem" } },
+        "threats": { "type": "array", "items": { "$ref": "#/$defs/SwotItem" } }
+      }
+    },
+
+    "five_forces": {
+      "type": "object",
+      "description": "轻量处理,仅保留强度判断+一句话概括,不逐条展开论证过程",
+      "properties": {
+        "rivalry_among_competitors": { "type": "object", "properties": { "intensity": { "type": "string" }, "summary": { "type": "string" } } },
+        "threat_of_new_entrants": { "type": "object", "properties": { "intensity": { "type": "string" }, "summary": { "type": "string" } } },
+        "threat_of_substitutes": { "type": "object", "properties": { "intensity": { "type": "string" }, "summary": { "type": "string" } } },
+        "buyer_power": { "type": "object", "properties": { "intensity": { "type": "string" }, "summary": { "type": "string" } } },
+        "supplier_power": { "type": "object", "properties": { "intensity": { "type": "string" }, "summary": { "type": "string" } } }
+      }
+    },
+
+    "financial_history": {
+      "type": "object",
+      "description": "表1:五年核心财务数据摘要,单位英镑",
+      "properties": {
+        "currency": { "type": "string", "const": "GBP" },
+        "unit": { "type": "string", "const": "million" },
+        "years": { "type": "array", "items": { "type": "string" } },
+        "series": {
+          "type": "object",
+          "properties": {
+            "total_revenue": { "type": "array", "items": { "type": "number" } },
+            "commercial_revenue": { "type": "array", "items": { "type": "number" } },
+            "broadcasting_revenue": { "type": "array", "items": { "type": "number" } },
+            "matchday_revenue": { "type": "array", "items": { "type": ["number", "null"] } },
+            "wages": { "type": "array", "items": { "type": "number" } },
+            "adjusted_ebitda": { "type": "array", "items": { "type": "number" } },
+            "operating_pl": { "type": "array", "items": { "type": "number" } },
+            "net_loss": { "type": "array", "items": { "type": "number" } },
+            "net_debt": { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "cagr_5yr_pct": {
+          "type": "object",
+          "description": "matchday_revenue无CAGR,因FY2021数据受空场比赛影响不具可比性",
+          "additionalProperties": { "type": ["number", "null"] }
+        }
+      }
+    },
+
+    "adjusted_ebitda_bridge_fy2025": {
+      "type": "object",
+      "properties": {
+        "currency": { "type": "string", "const": "GBP" },
+        "net_loss": { "type": "number" },
+        "tax": { "type": "number" },
+        "net_finance_costs": { "type": "number" },
+        "amortization": { "type": "number" },
+        "depreciation": { "type": "number" },
+        "exceptional_items": { "type": "number" },
+        "adjusted_ebitda": { "type": "number" }
+      }
+    },
+
+    "key_ratios_fy2025": {
+      "type": "object",
+      "properties": {
+        "wages_to_revenue_pct": { "type": "number" },
+        "net_debt_to_ebitda": { "type": "number" },
+        "interest_cover": { "type": "number" }
+      }
+    },
+
+    "valuation": {
+      "type": "object",
+      "properties": {
+
+        "peer_comparison": {
+          "type": "array",
+          "description": "单位欧元,与financial_history的英镑口径不同,注意区分",
+          "items": {
+            "type": "object",
+            "properties": {
+              "club": { "type": "string" },
+              "fiscal_year": { "type": "integer" },
+              "enterprise_value": { "$ref": "#/$defs/MonetaryAmount" },
+              "revenue": { "$ref": "#/$defs/MonetaryAmount" },
+              "ev_revenue_multiple": { "type": "number" }
+            }
+          }
+        },
+
+        "fcff_model": {
+          "type": "object",
+          "properties": {
+            "currency": { "type": "string", "const": "EUR" },
+            "fx_rate_note": { "type": "string", "description": "英镑按1:1.1487换算为欧元" },
+
+            "historical_base": {
+              "type": "object",
+              "properties": {
+                "years": { "type": "array", "items": { "type": "integer" } },
+                "revenue": { "type": "array", "items": { "type": "number" } },
+                "tax_rate_pct": { "type": "array", "items": { "type": "number" } },
+                "ebit": { "type": "array", "items": { "type": "number" } },
+                "d_and_a": { "type": "array", "items": { "type": "number" } },
+                "capex": { "type": "array", "items": { "type": "number" } },
+                "nwc_change": { "type": "array", "items": { "type": "number" } }
+              }
+            },
+
+            "key_assumptions": {
+              "type": "object",
+              "properties": {
+                "revenue_growth_pct_by_year": { "type": "object", "additionalProperties": { "type": "number" } },
+                "ebit_margin_pct": { "type": "object", "properties": { "fy2025": { "type": "number" }, "fy2030_target": { "type": "number" } } },
+                "wacc_pct": { "type": "number" },
+                "cost_of_equity_pct": { "type": "number" },
+                "cost_of_debt_pct": { "type": "number" },
+                "capital_structure": { "type": "object", "properties": { "equity_pct": { "type": "number" }, "debt_pct": { "type": "number" } } },
+                "terminal_growth_rate_pct": { "type": "number" },
+                "da_pct_of_revenue_range": { "type": "array", "items": { "type": "number" } },
+                "capex_pct_of_revenue_range": { "type": "array", "items": { "type": "number" } },
+                "nwc_change_pct_of_revenue": { "type": "number" }
+              }
+            },
+
+            "forecast": {
+              "type": "object",
+              "properties": {
+                "years": { "type": "array", "items": { "type": "integer" } },
+                "revenue": { "type": "array", "items": { "type": "number" } },
+                "after_tax_ebit": { "type": "array", "items": { "type": "number" } },
+                "d_and_a": { "type": "array", "items": { "type": "number" } },
+                "capex": { "type": "array", "items": { "type": "number" } },
+                "nwc_change": { "type": "array", "items": { "type": "number" } },
+                "fcff": { "type": "array", "items": { "type": "number" } },
+                "pv_fcff": { "type": "array", "items": { "type": "number" } }
+              }
+            },
+
+            "pv_fcff_sum": { "$ref": "#/$defs/MonetaryAmount" },
+
+            "terminal_value": {
+              "type": "object",
+              "properties": {
+                "undiscounted": { "$ref": "#/$defs/MonetaryAmount" },
+                "present_value": { "$ref": "#/$defs/MonetaryAmount" }
+              }
+            },
+
+            "enterprise_value": {
+              "type": "object",
+              "description": "此处存在原文数据矛盾,详见顶层data_quality_notes",
+              "properties": {
+                "base_calculation": { "$ref": "#/$defs/MonetaryAmount" },
+                "final_adjusted": { "$ref": "#/$defs/MonetaryAmount" },
+                "adjustment_note": { "type": "string" }
+              }
+            },
+
+            "sensitivity": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "variable": { "type": "string" },
+                  "shock": { "type": "string" },
+                  "resulting_ev": { "$ref": "#/$defs/MonetaryAmount" },
+                  "change_pct": { "type": "number" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "target_price_derivation": {
+      "type": "object",
+      "properties": {
+        "enterprise_value": { "$ref": "#/$defs/MonetaryAmount" },
+        "total_debt": { "$ref": "#/$defs/MonetaryAmount" },
+        "cash_and_equivalents": { "$ref": "#/$defs/MonetaryAmount" },
+        "equity_value": { "$ref": "#/$defs/MonetaryAmount" },
+        "shares_outstanding": {
+          "type": "object",
+          "properties": {
+            "class_a_million": { "type": "number" },
+            "class_b_million": { "type": "number" },
+            "total_million": { "type": "number" }
+          }
+        },
+        "target_price_eur": { "$ref": "#/$defs/MonetaryAmount" },
+        "fx_rate_eur_usd": { "type": "number" },
+        "target_price_usd": { "$ref": "#/$defs/MonetaryAmount" }
+      }
+    },
+
+    "investment_recommendation": {
+      "type": "object",
+      "properties": {
+        "catalysts": { "type": "array", "items": { "type": "string" } },
+        "key_risks": { "type": "array", "items": { "type": "string" } },
+        "recommendations_by_investor_type": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "investor_type": { "type": "string" },
+              "action": { "type": "string" },
+              "trigger": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

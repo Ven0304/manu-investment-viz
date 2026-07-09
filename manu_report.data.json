@@ -1,0 +1,818 @@
+{
+  "meta": {
+    "report_title": "曼联（MANU）投资研究报告",
+    "subject_company": "曼联（Manchester United plc / Manchester United Football Club）",
+    "ticker": "MANU",
+    "author": "马颢儒",
+    "institution": "西安交通大学",
+    "source_language": "zh"
+  },
+  "data_quality_notes": [
+    {
+      "path": "valuation.fcff_model.enterprise_value",
+      "issue": "4.2.4节企业价值先按预测期FCFF现值与终值现值计算为31.4亿欧元，随后称结合历史数据修正后最终为42.87亿欧元，但原文未展开非经营性资产调整过程。",
+      "values_found": [
+        {
+          "label": "base_calculation_text",
+          "value": 31.4,
+          "currency": "EUR",
+          "unit": "billion"
+        },
+        {
+          "label": "final_adjusted_text",
+          "value": 42.87,
+          "currency": "EUR",
+          "unit": "billion"
+        },
+        {
+          "label": "formula_components_text",
+          "expression": "5.72+25.68=31.4"
+        }
+      ]
+    },
+    {
+      "path": "valuation.peer_comparison[0].ev_revenue_multiple / target_price_derivation",
+      "issue": "4.1节正文称曼联当前估值倍数为4.39，但同段落表格中曼联2024 EV/Revenue倍数为4.27；第5章又称目标价对应2025财年EV/Revenue倍数4.39。",
+      "values_found": [
+        {
+          "label": "table_manu_2024_ev_revenue_multiple",
+          "value": 4.27
+        },
+        {
+          "label": "body_current_multiple",
+          "value": 4.39
+        },
+        {
+          "label": "target_price_section_2025_multiple",
+          "value": 4.39
+        }
+      ]
+    },
+    {
+      "path": "adjusted_ebitda_bridge_fy2025",
+      "issue": "3.2.1节调整后EBITDA桥接项按原文列示的期间亏损、税项、净财务成本、摊销、折旧、例外项目相加，与原文给出的最终调整后EBITDA 182.8不符。",
+      "values_found": [
+        {
+          "label": "net_loss",
+          "value": -33,
+          "currency": "GBP",
+          "unit": "million"
+        },
+        {
+          "label": "tax",
+          "value": -6.6,
+          "currency": "GBP",
+          "unit": "million"
+        },
+        {
+          "label": "net_finance_costs",
+          "value": 21.2,
+          "currency": "GBP",
+          "unit": "million"
+        },
+        {
+          "label": "amortization",
+          "value": 190.1,
+          "currency": "GBP",
+          "unit": "million"
+        },
+        {
+          "label": "depreciation",
+          "value": 14.2,
+          "currency": "GBP",
+          "unit": "million"
+        },
+        {
+          "label": "exceptional_items",
+          "value": 47.8,
+          "currency": "GBP",
+          "unit": "million"
+        },
+        {
+          "label": "sum_of_listed_items",
+          "value": 233.7,
+          "currency": "GBP",
+          "unit": "million"
+        },
+        {
+          "label": "reported_adjusted_ebitda",
+          "value": 182.8,
+          "currency": "GBP",
+          "unit": "million"
+        }
+      ]
+    },
+    {
+      "path": "valuation.fcff_model.forecast.pv_fcff / valuation.fcff_model.pv_fcff_sum",
+      "issue": "4.2.3节FCFF五年现值逐年相加为86.2，但原文合计栏写5.72；后续企业价值计算又将5.72与25.68相加并以亿欧元口径表述，存在合计数与单位口径不一致。",
+      "values_found": [
+        {
+          "label": "pv_fcff_by_year",
+          "values": [
+            15.1,
+            16.7,
+            19.1,
+            19.5,
+            15.8
+          ],
+          "currency": "EUR",
+          "unit": "million"
+        },
+        {
+          "label": "sum_of_pv_fcff_by_year",
+          "value": 86.2,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        {
+          "label": "reported_total_column",
+          "value": 5.72,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        {
+          "label": "enterprise_value_formula_uses",
+          "expression": "5.72+25.68=31.4",
+          "unit_text": "亿欧元"
+        }
+      ]
+    },
+    {
+      "path": "valuation.fcff_model.terminal_value.present_value",
+      "issue": "4.2.4节终值现值同一句中写作256.8百万欧元，同时括号中写“约25.68亿欧元”，两者单位换算不一致。",
+      "values_found": [
+        {
+          "label": "present_value_formula_result",
+          "value": 256.8,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        {
+          "label": "parenthetical_text",
+          "value": 25.68,
+          "currency": "EUR",
+          "unit": "billion"
+        }
+      ]
+    }
+  ],
+  "executive_summary": {
+    "rating": "持有 (Hold)",
+    "target_price_usd": {
+      "value": 18.14,
+      "currency": "USD"
+    },
+    "target_price_eur": {
+      "value": 16.64,
+      "currency": "EUR"
+    },
+    "current_price_usd": {
+      "value": 17.5,
+      "currency": "USD"
+    },
+    "upside_pct": 3.7,
+    "fx_rate_eur_usd": 1.09,
+    "core_thesis": [
+      "拉特克利夫爵士（INEOS）入主并接管足球运营权，推行降本增效措施，带来管理重构与效率提升。",
+      "曼联拥有11亿全球粉丝基础，新签阿迪达斯（10年9亿英镑）及骁龙顶级赞助合同锁定长期现金流，商业护城河稳固。",
+      "作为全球顶级体育IP，品牌价值具有抗周期和“安全溢价”特征。"
+    ],
+    "key_financials_summary": {
+      "adjusted_ebitda_fy2025": {
+        "value": 182.8,
+        "currency": "GBP",
+        "unit": "million"
+      },
+      "net_debt": {
+        "value": 749,
+        "currency": "GBP",
+        "unit": "million"
+      },
+      "net_loss_note": "账面净利润常年为负，主要受巨额球员摊销影响。"
+    },
+    "risk_factors": [
+      "老特拉福德球场扩建计划带来的财务杠杆压力及执行风险。",
+      "长期无缘欧冠导致赞助合同惩罚性减值风险。",
+      "英超PSR（盈利与可持续发展规则）收紧对引援投入的限制。"
+    ]
+  },
+  "company_profile": {
+    "ticker": "MANU",
+    "exchange": "纽约证券交易所（NYSE）",
+    "incorporation": "开曼群岛（Cayman Islands）",
+    "headquarters": "英国曼彻斯特",
+    "global_fanbase_estimate": "约11亿粉丝和追随者",
+    "market_cap": {
+      "value": 3.3,
+      "currency": "USD",
+      "unit": "billion"
+    }
+  },
+  "ownership_structure": [
+    {
+      "holder": "格雷泽家族",
+      "economic_stake_pct": 58,
+      "voting_power_pct": 67.9,
+      "share_class": "主要通过B类普通股控制；B类股每股10票",
+      "note": "原文称当前股权分布为格雷泽家族58%，截至2024年底仍控制约67.9%的总投票权。"
+    },
+    {
+      "holder": "拉特克利夫爵士 / INEOS",
+      "economic_stake_pct": 25,
+      "voting_power_pct": null,
+      "share_class": "战略入股；原文另称2024年2月Trawlers Ltd（后转为INEOS Limited）完成27.7%股权收购",
+      "note": "原文在股权分布中写25%，在交易描述中写27.7%，此处按股权分布段落填25%，并在note保留27.7%的交易表述。"
+    },
+    {
+      "holder": "公众流通股",
+      "economic_stake_pct": 17,
+      "voting_power_pct": null,
+      "share_class": "A类普通股；每股1票，纽交所上市交易",
+      "note": "原文另称约31%的A股由机构投资者和散户持有。"
+    }
+  ],
+  "core_assets": {
+    "old_trafford": {
+      "current_capacity": 74000,
+      "expansion_options": [
+        {
+          "type": "翻新",
+          "estimated_cost": {
+            "value": 1,
+            "currency": "GBP",
+            "unit": "billion"
+          },
+          "new_capacity": 87000
+        },
+        {
+          "type": "新建",
+          "estimated_cost": {
+            "value": 2,
+            "currency": "GBP",
+            "unit": "billion"
+          },
+          "new_capacity": 100000
+        }
+      ]
+    },
+    "carrington_training_ground": {
+      "renovation_cost": {
+        "value": 50,
+        "currency": "GBP",
+        "unit": "million"
+      },
+      "note": "2024/25赛季期间启动翻新项目，升级医疗、恢复和营养设施，以缩小与曼城和托特纳姆热刺的硬件差距。"
+    },
+    "player_registration_intangibles": {
+      "as_of_date": "2025-09-30",
+      "amount": {
+        "value": 624.1,
+        "currency": "GBP",
+        "unit": "million"
+      }
+    }
+  },
+  "revenue_breakdown_fy2025": {
+    "commercial": {
+      "value": 333.3,
+      "currency": "GBP",
+      "pct_of_total": 50
+    },
+    "broadcasting": {
+      "value": 196.1,
+      "currency": "GBP",
+      "unit": "million"
+    },
+    "matchday": {
+      "value": 137.1,
+      "currency": "GBP",
+      "unit": "million"
+    }
+  },
+  "key_sponsorships": [
+    {
+      "partner": "Adidas",
+      "annual_value": {
+        "value": 90,
+        "currency": "GBP",
+        "unit": "million"
+      },
+      "term_years": 10,
+      "risk_clause": "合同包含“降级条款”和“欧冠缺席条款”；若俱乐部连续两个赛季缺席欧冠，赞助费可能减少30%（约2700万英镑）。"
+    },
+    {
+      "partner": "Snapdragon",
+      "annual_value": {
+        "value": 60,
+        "currency": "GBP",
+        "unit": "million"
+      },
+      "term_years": null,
+      "risk_clause": "原文未明确给出风险条款；原文称其为2024/25赛季生效的胸前广告赞助商，年均价值约6000万英镑（7500万美元）。"
+    }
+  ],
+  "swot": {
+    "strengths": [
+      {
+        "tag": "转播收入韧性",
+        "text": "即使曼联竞技成绩波动，其基础转播分成仍确保每年至少1.2亿英镑收入；英超版权过去三个周期保持7.2%的年复合增长率，显著跑赢同期英国通胀水平3.1%。"
+      },
+      {
+        "tag": "安全溢价",
+        "text": "在2025年全球地缘冲突加剧背景下，曼联投资具有较强跨境流动性，并保持价值观中立、减少意识形态审查；纽交所上市也使部分英镑资产可置换为美元计价的安全储备。"
+      },
+      {
+        "tag": "全球品牌变现",
+        "text": "曼联具有无与伦比的全球品牌认知与商业变现能力，拥有英超最广泛的全球赞助商网络，近十年表现平庸却依然带来可观收入。"
+      }
+    ],
+    "weaknesses": [
+      {
+        "tag": "管理割裂",
+        "text": "足球运营与商业运营长期割裂，决策效率低下；如果长期（3年以上）无缘欧冠，阿迪达斯等核心赞助商惩罚性条款将被激活，商业护城河可能被削弱。"
+      },
+      {
+        "tag": "转会回报偏低",
+        "text": "球员转会市场投资回报率较低，溢价引援频繁，原文举例包括霍伊伦、安东尼、芒特、麦克托米奈、滕哈格等。"
+      },
+      {
+        "tag": "历史债务负担",
+        "text": "格雷泽家族遗留债务挤压现金支付能力，在高利率环境下产生巨额利息，并通过契约限制俱乐部转会市场投入，接近PSR红线。"
+      }
+    ],
+    "opportunities": [
+      {
+        "tag": "INEOS管理重构",
+        "text": "拉特克利夫爵士入主后引进曼城系CEO贝拉达、纽卡斯尔联体育总监阿什沃斯，决策逐渐效率化；并可借助英力士体系、尼斯队“双轨制”培养计划及债务处理改善运营。"
+      },
+      {
+        "tag": "商业创新",
+        "text": "推出“United+”会员订阅服务，开发NFT数字藏品，2025年试水收入500万镑；球场光伏改造未来可减碳30%。"
+      }
+    ],
+    "threats": [
+      {
+        "tag": "PSR收紧",
+        "text": "英超盈利与可持续发展规则PSR收紧，2026年工资帽降至60%，限制引援投入；Swiss Ramble估算曼联在PSR计算中处于“极限操作”状态。"
+      },
+      {
+        "tag": "地缘政治不确定性",
+        "text": "中东赞助商不稳定，如卡塔尔投资局可能转向其他俱乐部；英国脱欧后劳工证政策对引援具有一定影响。"
+      },
+      {
+        "tag": "替代娱乐竞争",
+        "text": "电竞、短视频等替代娱乐分流年轻球迷注意力，足球吸引力下降。"
+      }
+    ]
+  },
+  "five_forces": {
+    "rivalry_among_competitors": {
+      "intensity": "高",
+      "summary": "现有竞争者竞争高强度但高度结构化，商业收入与竞技成绩正反馈导致“强者恒强”的马太效应。"
+    },
+    "threat_of_new_entrants": {
+      "intensity": "极低",
+      "summary": "英超准入壁垒高，新俱乐部必须通过足球金字塔竞技晋级，无法通过资本直接购买席位。"
+    },
+    "threat_of_substitutes": {
+      "intensity": "中高",
+      "summary": "NBA、F1、电竞、流媒体和游戏等争夺年轻观众时间与订阅预算，其他足球联赛也在区域市场形成竞争。"
+    },
+    "buyer_power": {
+      "intensity": "分化",
+      "summary": "转播权买方议价能力强但英超内容稀缺；赞助商对顶级俱乐部议价能力弱，球迷对门票议价能力弱、对周边商品议价能力中等。"
+    },
+    "supplier_power": {
+      "intensity": "极高",
+      "summary": "顶级球员为稀缺资源，薪资与转会费持续通胀，球员工资占俱乐部收入比平均为60-70%。"
+    }
+  },
+  "financial_history": {
+    "currency": "GBP",
+    "unit": "million",
+    "years": [
+      "FY2021",
+      "FY2022",
+      "FY2023",
+      "FY2024",
+      "FY2025"
+    ],
+    "series": {
+      "total_revenue": [
+        494.1,
+        583.2,
+        648.4,
+        661.8,
+        666.5
+      ],
+      "commercial_revenue": [
+        232.2,
+        257.8,
+        302.9,
+        302.9,
+        333.3
+      ],
+      "broadcasting_revenue": [
+        254.8,
+        214.9,
+        209.1,
+        221.8,
+        196.1
+      ],
+      "matchday_revenue": [
+        7.1,
+        110.5,
+        136.4,
+        137.1,
+        137.1
+      ],
+      "wages": [
+        -322.6,
+        -384.2,
+        -331.4,
+        -364.7,
+        -313.2
+      ],
+      "adjusted_ebitda": [
+        95.1,
+        81.1,
+        155,
+        147.7,
+        182.8
+      ],
+      "operating_pl": [
+        -36.9,
+        -87.4,
+        -11.2,
+        -69.3,
+        -18.4
+      ],
+      "net_loss": [
+        -92.2,
+        -115.5,
+        -28.7,
+        -113.2,
+        -33
+      ],
+      "net_debt": [
+        419.5,
+        514.9,
+        613.3,
+        649,
+        749.2
+      ]
+    },
+    "cagr_5yr_pct": {
+      "total_revenue": 7.8,
+      "commercial_revenue": 9.4,
+      "broadcasting_revenue": -6.3,
+      "matchday_revenue": null,
+      "wages": -0.7,
+      "adjusted_ebitda": 17.7,
+      "operating_pl": -16,
+      "net_loss": null,
+      "net_debt": 15.6
+    }
+  },
+  "adjusted_ebitda_bridge_fy2025": {
+    "currency": "GBP",
+    "net_loss": -33,
+    "tax": -6.6,
+    "net_finance_costs": 21.2,
+    "amortization": 190.1,
+    "depreciation": 14.2,
+    "exceptional_items": 47.8,
+    "adjusted_ebitda": 182.8
+  },
+  "key_ratios_fy2025": {
+    "wages_to_revenue_pct": 47,
+    "net_debt_to_ebitda": 4.1,
+    "interest_cover": 8.6
+  },
+  "valuation": {
+    "peer_comparison": [
+      {
+        "club": "曼联",
+        "fiscal_year": 2024,
+        "enterprise_value": {
+          "value": 3335.4,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        "revenue": {
+          "value": 780.8,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        "ev_revenue_multiple": 4.27
+      },
+      {
+        "club": "曼联",
+        "fiscal_year": 2023,
+        "enterprise_value": {
+          "value": 4399.5,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        "revenue": {
+          "value": 755.5,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        "ev_revenue_multiple": 5.82
+      },
+      {
+        "club": "尤文图斯",
+        "fiscal_year": 2024,
+        "enterprise_value": {
+          "value": 1154.7,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        "revenue": {
+          "value": 395.1,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        "ev_revenue_multiple": 2.92
+      },
+      {
+        "club": "多特蒙德",
+        "fiscal_year": 2024,
+        "enterprise_value": {
+          "value": 476.2,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        "revenue": {
+          "value": 509.2,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        "ev_revenue_multiple": 0.94
+      }
+    ],
+    "fcff_model": {
+      "currency": "EUR",
+      "fx_rate_note": "数据来源为曼联2021-2025财年财报，单位统一为百万欧元；英镑按1:1.1487换算。",
+      "historical_base": {
+        "years": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "revenue": [
+          575.7,
+          678.2,
+          755.5,
+          780.8,
+          777.6
+        ],
+        "tax_rate_pct": [
+          19,
+          25,
+          25,
+          25,
+          25
+        ],
+        "ebit": [
+          -43,
+          -101.6,
+          -13,
+          -81.8,
+          -21.5
+        ],
+        "d_and_a": [
+          162.4,
+          192.8,
+          217.3,
+          243.8,
+          249
+        ],
+        "capex": [
+          114.7,
+          108.7,
+          163.3,
+          201.9,
+          320.5
+        ],
+        "nwc_change": [
+          2.9,
+          299.7,
+          87.9,
+          37.6,
+          297.9
+        ]
+      },
+      "key_assumptions": {
+        "revenue_growth_pct_by_year": {
+          "2026": 6,
+          "2027": 5,
+          "2028": 4,
+          "2029": 3,
+          "2030": 2.5
+        },
+        "ebit_margin_pct": {
+          "fy2025": 7.6,
+          "fy2030_target": 8.5
+        },
+        "wacc_pct": 7.8,
+        "cost_of_equity_pct": 9.2,
+        "cost_of_debt_pct": 4.5,
+        "capital_structure": {
+          "equity_pct": 70,
+          "debt_pct": 30
+        },
+        "terminal_growth_rate_pct": 2,
+        "da_pct_of_revenue_range": [
+          23,
+          24
+        ],
+        "capex_pct_of_revenue_range": [
+          25,
+          26
+        ],
+        "nwc_change_pct_of_revenue": 2
+      },
+      "forecast": {
+        "years": [
+          2026,
+          2027,
+          2028,
+          2029,
+          2030
+        ],
+        "revenue": [
+          811.9,
+          852.5,
+          886.6,
+          913.2,
+          936.1
+        ],
+        "after_tax_ebit": [
+          64.9,
+          72.5,
+          79.4,
+          84.6,
+          79.6
+        ],
+        "d_and_a": [
+          194.9,
+          204.6,
+          212.8,
+          219.2,
+          224.7
+        ],
+        "capex": [
+          211.1,
+          221.6,
+          229.5,
+          237.4,
+          243.4
+        ],
+        "nwc_change": [
+          16.2,
+          17.1,
+          17.7,
+          18.3,
+          18.7
+        ],
+        "fcff": [
+          16.3,
+          19.3,
+          24.1,
+          26.9,
+          22.3
+        ],
+        "pv_fcff": [
+          15.1,
+          16.7,
+          19.1,
+          19.5,
+          15.8
+        ]
+      },
+      "pv_fcff_sum": {
+        "value": 5.72,
+        "currency": "EUR",
+        "unit": "million"
+      },
+      "terminal_value": {
+        "undiscounted": {
+          "value": 391.9,
+          "currency": "EUR",
+          "unit": "million"
+        },
+        "present_value": {
+          "value": 256.8,
+          "currency": "EUR",
+          "unit": "million"
+        }
+      },
+      "enterprise_value": {
+        "base_calculation": {
+          "value": 31.4,
+          "currency": "EUR",
+          "unit": "billion"
+        },
+        "final_adjusted": {
+          "value": 42.87,
+          "currency": "EUR",
+          "unit": "billion"
+        },
+        "adjustment_note": "原文称结合历史数据修正后最终为42.87亿欧元（含非经营性资产调整），但未展开调整过程。"
+      },
+      "sensitivity": [
+        {
+          "variable": "WACC",
+          "shock": "+0.5%至8.3%",
+          "resulting_ev": {
+            "value": 39.6,
+            "currency": "EUR",
+            "unit": "billion"
+          },
+          "change_pct": -7.6
+        },
+        {
+          "variable": "terminal_growth_rate",
+          "shock": "-0.5%至1.5%",
+          "resulting_ev": {
+            "value": 38.9,
+            "currency": "EUR",
+            "unit": "billion"
+          },
+          "change_pct": -9.2
+        }
+      ]
+    }
+  },
+  "target_price_derivation": {
+    "enterprise_value": {
+      "value": 42.87,
+      "currency": "EUR",
+      "unit": "billion"
+    },
+    "total_debt": {
+      "value": 16.59,
+      "currency": "EUR",
+      "unit": "billion"
+    },
+    "cash_and_equivalents": {
+      "value": 0.84,
+      "currency": "EUR",
+      "unit": "billion"
+    },
+    "equity_value": {
+      "value": 27.12,
+      "currency": "EUR",
+      "unit": "billion"
+    },
+    "shares_outstanding": {
+      "class_a_million": 43.2868,
+      "class_b_million": 119.7,
+      "total_million": 163
+    },
+    "target_price_eur": {
+      "value": 16.64,
+      "currency": "EUR"
+    },
+    "fx_rate_eur_usd": 1.09,
+    "target_price_usd": {
+      "value": 18.14,
+      "currency": "USD"
+    }
+  },
+  "investment_recommendation": {
+    "catalysts": [
+      "商业合作放量，如骁龙胸前赞助续约或新增全球顶级赞助商，有望推动商业收入增速超预期。",
+      "扩建项目顺利推进，若工期不超支、成本控制达标，将缓解市场对现金流的担忧。",
+      "竞技成绩提升，重返欧冠四强及以上行列，可带动转播收入与品牌溢价进一步扩大。",
+      "债务优化，通过再融资降低融资成本，改善自由现金流状况。"
+    ],
+    "key_risks": [
+      "老特拉福德扩建存在超支可能，潜在额外成本达5000万英镑，且当前16.59亿欧元债务规模可能进一步扩大。",
+      "扩建期间比赛日收入若下滑超8%，或因球迷观赛体验恶化导致会员流失，将对业绩造成冲击。",
+      "英超转播权续约价格不及预期、UEFA财务公平规则收紧限制引援投入，可能制约球队发展。",
+      "长期无缘欧冠可能导致商业赞助降档，核心球员流失也将直接影响球队竞争力。"
+    ],
+    "recommendations_by_investor_type": [
+      {
+        "investor_type": "长期投资者（持有1年以上）",
+        "action": "可逢低布局",
+        "trigger": "重点关注扩建项目进度与商业收入增长；若目标价回调至16.50美元以下可加大配置。"
+      },
+      {
+        "investor_type": "短期投资者（持有6个月以内）",
+        "action": "建议观望",
+        "trigger": "规避扩建初期现金流压力与项目执行不确定性带来的股价波动。"
+      },
+      {
+        "investor_type": "风险偏好较低投资者",
+        "action": "谨慎介入",
+        "trigger": "优先关注现金流改善信号，如商业预付款到账、球员转会收入，再考虑介入。"
+      }
+    ]
+  }
+}
