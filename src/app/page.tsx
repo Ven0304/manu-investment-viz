@@ -2,30 +2,20 @@
 
 import { useEffect, useState } from "react";
 
-import type {
-  ManuReport,
-  MonetaryAmount,
-} from "@/data/manu-report.schema";
+import {
+  FinancialSection,
+  RecommendationSection,
+  SwotSection,
+  ValuationSection,
+} from "@/components/report-sections";
+import type { ManuReport } from "@/data/manu-report.schema";
 import { fetchManuReport } from "@/lib/report-client";
+import { formatMoney } from "@/lib/report-format";
 
 type ReportViewState =
   | { status: "loading" }
   | { status: "success"; report: ManuReport }
   | { status: "error"; message: string };
-
-const unitSuffix = {
-  million: "m",
-  billion: "bn",
-} as const;
-
-function formatMoney(amount: MonetaryAmount): string {
-  const value = new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 2,
-  }).format(amount.value);
-  const suffix = amount.unit ? unitSuffix[amount.unit] : "";
-
-  return `${amount.currency} ${value}${suffix}`;
-}
 
 function splitReportTitle(title: string): string[] {
   const suffix = "投资研究报告";
@@ -193,6 +183,11 @@ function ReportPage({ report }: { report: ManuReport }) {
           </aside>
         </div>
       </section>
+
+      <FinancialSection report={report} />
+      <ValuationSection report={report} />
+      <SwotSection report={report} />
+      <RecommendationSection report={report} />
 
       <section className="mx-auto max-w-6xl px-6 py-16 sm:px-10 sm:py-20">
         <div className="max-w-3xl">

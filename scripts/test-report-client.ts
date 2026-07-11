@@ -5,6 +5,7 @@ import {
   fetchManuReport,
   ReportRequestError,
 } from "../src/lib/report-client";
+import { formatMoney } from "../src/lib/report-format";
 
 async function main() {
   const success = await fetchManuReport({
@@ -17,6 +18,11 @@ async function main() {
 
   assert.equal(success.meta.ticker, "MANU");
   assert.equal(success.data_quality_notes.length, 5);
+  assert.equal(formatMoney(success.executive_summary.target_price_usd), "USD 18.14");
+  assert.equal(
+    formatMoney(success.executive_summary.key_financials_summary.net_debt),
+    "GBP 749m",
+  );
 
   await assert.rejects(
     fetchManuReport({
