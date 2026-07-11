@@ -8,7 +8,8 @@
     "start": "node node_modules/next/dist/bin/next start",
     "lint": "node node_modules/eslint/bin/eslint.js .",
     "validate:data": "node node_modules/tsx/dist/cli.mjs scripts/validate-report.ts",
-    "test:api": "node node_modules/tsx/dist/cli.mjs scripts/test-report-api.ts"
+    "test:api": "node node_modules/tsx/dist/cli.mjs scripts/test-report-api.ts",
+    "test:client": "node node_modules/tsx/dist/cli.mjs scripts/test-report-client.ts"
   },
   "dependencies": {
     "next": "16.2.10",
