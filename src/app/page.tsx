@@ -27,6 +27,14 @@ function formatMoney(amount: MonetaryAmount): string {
   return `${amount.currency} ${value}${suffix}`;
 }
 
+function splitReportTitle(title: string): string[] {
+  const suffix = "投资研究报告";
+
+  if (!title.endsWith(suffix)) return [title];
+
+  return [title.slice(0, -suffix.length).trim(), suffix].filter(Boolean);
+}
+
 function LoadingState() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f4f1ea] px-6 text-[#181611]">
@@ -92,6 +100,7 @@ function MetricCard({ label, value }: { label: string; value: string }) {
 
 function ReportPage({ report }: { report: ManuReport }) {
   const { meta, executive_summary: summary } = report;
+  const titleLines = splitReportTitle(meta.report_title);
 
   return (
     <main className="min-h-screen bg-[#f4f1ea] text-[#181611]">
@@ -111,7 +120,11 @@ function ReportPage({ report }: { report: ManuReport }) {
               Equity Research · {meta.ticker}
             </p>
             <h1 className="mt-5 max-w-4xl text-5xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-7xl">
-              {meta.report_title}
+              {titleLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
             </h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-black/60">
               {meta.subject_company}
