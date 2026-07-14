@@ -50,7 +50,7 @@ function LineChart({ years, series }: { years: string[]; series: ChartSeries[] }
               <polyline points={points} fill="none" stroke={item.color} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
               {item.values.map((value, index) => (
                 <g key={`${item.label}-${years[index]}`}>
-                  <circle cx={x(index)} cy={y(value)} r="4.5" fill="#fffdf7" stroke={item.color} strokeWidth="2.5" />
+                  <circle cx={x(index)} cy={y(value)} r="4.5" fill="var(--paper)" stroke={item.color} strokeWidth="2.5" />
                 </g>
               ))}
             </g>

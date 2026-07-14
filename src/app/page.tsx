@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  type MouseEvent as ReactMouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   FinancialSection,
@@ -26,6 +33,10 @@ const sectionLinks = [
 ] as const;
 
 type SectionId = (typeof sectionLinks)[number]["id"];
+type NavigateHandler = (
+  event: ReactMouseEvent<HTMLAnchorElement>,
+  sectionId: SectionId,
+) => void;
 
 function LoadingState() {
   return (
@@ -56,37 +67,140 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
   );
 }
 
-function useActiveSection(): SectionId {
+function useActiveSection(): {
+  activeSection: SectionId;
+  onNavigate: NavigateHandler;
+} {
   const [activeSection, setActiveSection] = useState<SectionId>("judgment");
+  const lockedSection = useRef<SectionId | null>(null);
+  const settleFrame = useRef<number | null>(null);
 
   useEffect(() => {
     const sections = sectionLinks
       .map(({ id }) => document.getElementById(id))
       .filter((section): section is HTMLElement => section !== null);
+
+    const readCurrentSection = () => {
+      const documentOffset =
+        Number.parseFloat(
+          getComputedStyle(document.documentElement).scrollPaddingTop,
+        ) || 0;
+      const sectionOffset = sections[0]
+        ? Number.parseFloat(getComputedStyle(sections[0]).scrollMarginTop) || 0
+        : 0;
+      const readingLine = Math.max(documentOffset, sectionOffset, 112);
+      let current = sections[0];
+
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= readingLine + 2) {
+          current = section;
+        } else {
+          break;
+        }
+      }
+
+      if (current) setActiveSection(current.id as SectionId);
+    };
+
     const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActiveSection(visible.target.id as SectionId);
+      () => {
+        if (lockedSection.current === null) readCurrentSection();
       },
-      { rootMargin: "-18% 0px -64% 0px", threshold: [0, 0.15, 0.4] },
+      { rootMargin: "-112px 0px -62% 0px", threshold: [0, 0.15, 0.5] },
     );
+
     sections.forEach((section) => observer.observe(section));
+    readCurrentSection();
+
     return () => observer.disconnect();
   }, []);
 
-  return activeSection;
+  useEffect(
+    () => () => {
+      if (settleFrame.current !== null) {
+        cancelAnimationFrame(settleFrame.current);
+      }
+    },
+    [],
+  );
+
+  const onNavigate = useCallback<NavigateHandler>((event, sectionId) => {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+
+    const destination = document.getElementById(sectionId);
+    if (!destination) return;
+
+    event.preventDefault();
+    lockedSection.current = sectionId;
+    setActiveSection(sectionId);
+    window.history.replaceState(null, "", `#${sectionId}`);
+    destination.scrollIntoView({ block: "start", behavior: "auto" });
+
+    if (settleFrame.current !== null) {
+      cancelAnimationFrame(settleFrame.current);
+    }
+
+    let stableFrames = 0;
+    let previousScrollY = window.scrollY;
+
+    const releaseWhenSettled = () => {
+      const currentScrollY = window.scrollY;
+      const destinationRect = destination.getBoundingClientRect();
+      const scrollMargin =
+        Number.parseFloat(getComputedStyle(destination).scrollMarginTop) || 0;
+      const scrollIsStable = Math.abs(currentScrollY - previousScrollY) < 0.5;
+      const destinationIsAligned =
+        Math.abs(destinationRect.top - scrollMargin) <= 3;
+      const destinationIsVisible =
+        destinationRect.bottom > scrollMargin &&
+        destinationRect.top < window.innerHeight;
+      const reachedPageBoundary =
+        Math.abs(
+          document.documentElement.scrollHeight -
+            window.innerHeight -
+            currentScrollY,
+        ) <= 3;
+
+      stableFrames =
+        scrollIsStable &&
+        (destinationIsAligned || destinationIsVisible || reachedPageBoundary)
+          ? stableFrames + 1
+          : 0;
+      previousScrollY = currentScrollY;
+
+      if (stableFrames >= 2) {
+        lockedSection.current = null;
+        setActiveSection(sectionId);
+        settleFrame.current = null;
+        return;
+      }
+
+      settleFrame.current = requestAnimationFrame(releaseWhenSettled);
+    };
+
+    settleFrame.current = requestAnimationFrame(releaseWhenSettled);
+  }, []);
+
+  return { activeSection, onNavigate };
 }
 
-function ChapterNavigation({ activeSection }: { activeSection: SectionId }) {
+function ChapterNavigation({ activeSection, onNavigate }: { activeSection: SectionId; onNavigate: NavigateHandler }) {
   return (
     <nav className="chapter-nav" aria-label="报告章节">
       <p className="nav-heading">CONTENTS</p>
       <ol>
         {sectionLinks.map((item) => (
           <li key={item.id}>
-            <a href={`#${item.id}`} aria-current={activeSection === item.id ? "location" : undefined}>
+            <a href={`#${item.id}`} onClick={(event) => onNavigate(event, item.id)} aria-current={activeSection === item.id ? "location" : undefined}>
               <span>{item.index}</span>{item.label}
             </a>
           </li>
@@ -97,11 +211,11 @@ function ChapterNavigation({ activeSection }: { activeSection: SectionId }) {
   );
 }
 
-function MobileJumpBar({ activeSection }: { activeSection: SectionId }) {
+function MobileJumpBar({ activeSection, onNavigate }: { activeSection: SectionId; onNavigate: NavigateHandler }) {
   return (
     <nav className="mobile-jump" aria-label="快速跳转">
       {sectionLinks.map((item) => (
-        <a key={item.id} href={`#${item.id}`} aria-current={activeSection === item.id ? "location" : undefined}>
+        <a key={item.id} href={`#${item.id}`} onClick={(event) => onNavigate(event, item.id)} aria-current={activeSection === item.id ? "location" : undefined}>
           <span>{item.index}</span>{item.label}
         </a>
       ))}
@@ -109,7 +223,7 @@ function MobileJumpBar({ activeSection }: { activeSection: SectionId }) {
   );
 }
 
-function EvidenceSpine({ report, activeSection }: { report: ManuReport; activeSection: SectionId }) {
+function EvidenceSpine({ report, activeSection, onNavigate }: { report: ManuReport; activeSection: SectionId; onNavigate: NavigateHandler }) {
   const summary = report.executive_summary;
   const history = report.financial_history;
   const lastIndex = history.years.length - 1;
@@ -152,7 +266,7 @@ function EvidenceSpine({ report, activeSection }: { report: ManuReport; activeSe
       <ol>
         {evidence.map((item, index) => (
           <li key={item.id} className={activeSection === item.id ? "is-active" : undefined}>
-            <a href={`#${item.id}`} aria-current={activeSection === item.id ? "location" : undefined}>
+            <a href={`#${item.id}`} onClick={(event) => onNavigate(event, item.id)} aria-current={activeSection === item.id ? "location" : undefined}>
               <span className="spine-node" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               <span className="spine-copy">
                 <span className="evidence-type">{item.type}</span>
@@ -195,7 +309,7 @@ function QualificationRail({ report }: { report: ManuReport }) {
 }
 
 function ReportPage({ report }: { report: ManuReport }) {
-  const activeSection = useActiveSection();
+  const { activeSection, onNavigate } = useActiveSection();
   const { meta, executive_summary: summary } = report;
   const title = useMemo(() => meta.report_title.replace("投资研究报告", "").trim(), [meta.report_title]);
 
@@ -204,15 +318,15 @@ function ReportPage({ report }: { report: ManuReport }) {
       <a className="skip-link" href="#report-content">跳到报告正文</a>
       <header className="report-topbar">
         <div className="topbar-inner">
-          <a href="#judgment" className="wordmark" aria-label="返回投资判断"><span>{meta.ticker}</span><small>INVESTMENT DOSSIER</small></a>
+          <a href="#judgment" onClick={(event) => onNavigate(event, "judgment")} className="wordmark" aria-label="返回投资判断"><span>{meta.ticker}</span><small>INVESTMENT DOSSIER</small></a>
           <p><span className="status-dot" aria-hidden="true" /> 本地报告数据已校验</p>
         </div>
       </header>
 
-      <MobileJumpBar activeSection={activeSection} />
+      <MobileJumpBar activeSection={activeSection} onNavigate={onNavigate} />
 
       <div className="report-shell">
-        <div className="left-rail"><ChapterNavigation activeSection={activeSection} /></div>
+        <div className="left-rail"><ChapterNavigation activeSection={activeSection} onNavigate={onNavigate} /></div>
 
         <article id="report-content" className="report-content">
           <section id="judgment" className="hero-section chapter-section" aria-labelledby="report-title">
@@ -232,7 +346,7 @@ function ReportPage({ report }: { report: ManuReport }) {
               </div>
             </div>
 
-            <EvidenceSpine report={report} activeSection={activeSection} />
+            <EvidenceSpine report={report} activeSection={activeSection} onNavigate={onNavigate} />
 
             <div className="argument-section" aria-labelledby="core-thesis-title">
               <div className="section-intro">
@@ -272,7 +386,7 @@ function ReportPage({ report }: { report: ManuReport }) {
 
           <footer className="report-footer">
             <p>{meta.institution} · {meta.author}</p>
-            <a href="#judgment">返回结论 <span aria-hidden="true">↑</span></a>
+            <a href="#judgment" onClick={(event) => onNavigate(event, "judgment")}>返回结论 <span aria-hidden="true">↑</span></a>
           </footer>
         </article>
 
