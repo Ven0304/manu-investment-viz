@@ -1,265 +1,46 @@
 "use client";
-
 import { useEffect, useState } from "react";
-
-import {
-  FinancialSection,
-  RecommendationSection,
-  SwotSection,
-  ValuationSection,
-} from "@/components/report-sections";
+import { FinancialSection, RecommendationSection, SwotSection, ValuationSection } from "@/components/report-sections";
 import type { ManuReport } from "@/data/manu-report.schema";
 import { fetchManuReport } from "@/lib/report-client";
-import { formatMoney } from "@/lib/report-format";
+import { formatMoney, formatPercent } from "@/lib/report-format";
 
-type ReportViewState =
-  | { status: "loading" }
-  | { status: "success"; report: ManuReport }
-  | { status: "error"; message: string };
+type State={status:"loading"}|{status:"success";report:ManuReport}|{status:"error";message:string};
+type Metric="total_revenue"|"broadcasting_revenue"|"adjusted_ebitda"|"net_debt";
+type Signal={id:string;no:string;mark:string;state:string;title:string;basis:string;impact:string;detail:string;metric?:Metric;href:string};
+const signals:Signal[]=[
+{id:"debt",no:"01",mark:"↑",state:"风险",title:"净负债持续抬升",basis:"FY2021 → FY2025 · GBP m",impact:"削弱扩建计划下的财务缓冲。",detail:"净负债由 419.5m 上升至 749.2m，五年 CAGR 为 15.6%。这是持有判断下的首要复核项。",metric:"net_debt",href:"#financials"},
+{id:"broadcast",no:"02",mark:"↓",state:"风险",title:"转播收入逆势下滑",basis:"五年 CAGR −6.3%",impact:"反映竞技成绩与赛事资格压力。",detail:"转播收入从 254.8m 降至 196.1m，与长期无缘欧冠的赞助降档风险方向一致。",metric:"broadcasting_revenue",href:"#financials"},
+{id:"ev",no:"03",mark:"≠",state:"口径",title:"FCFF 企业价值存在缺口",basis:"EUR 3.14bn / 4.287bn",impact:"目标价依据需保留原始不确定性。",detail:"企业价值先计算为 31.4 亿欧元，随后修正为 42.87 亿欧元，但未展开调整过程。",href:"#valuation"},
+{id:"upside",no:"04",mark:"±",state:"关注",title:"目标价上行空间有限",basis:"USD 17.50 → 18.14",impact:"3.7% 上行不足以覆盖主要执行风险。",detail:"目标价与当前价格差距较窄，应结合债务、扩建和转播收入判断安全边际。",href:"#overview"},
+{id:"ebitda",no:"05",mark:"↑",state:"改善",title:"调整后 EBITDA 改善",basis:"FY2025 GBP 182.8m",impact:"经营修复为持有判断提供支撑。",detail:"FY2025 调整后 EBITDA 回升至 182.8m，五年 CAGR 为 17.7%；桥接项另有口径矛盾。",metric:"adjusted_ebitda",href:"#financials"}];
 
-function splitReportTitle(title: string): string[] {
-  const suffix = "投资研究报告";
+function Loading(){return <main className="state-screen" aria-busy="true"><section className="state-panel" role="status" aria-live="polite"><span className="state-kicker"><i/> MANU / REPORT SNAPSHOT</span><h1>正在校验报告数据</h1><p>从本地 API 读取并验证 16 个报告分区。</p><div className="loading-track" aria-hidden="true"><span/></div></section></main>}
+function ErrorView({message,retry}:{message:string;retry:()=>void}){return <main className="state-screen"><section className="state-panel is-error" aria-live="assertive"><span className="state-kicker"><b>!</b> DATA UNAVAILABLE</span><h1>报告暂时无法读取</h1><p>{message}</p><button className="primary-button" type="button" onClick={retry}>重新加载</button></section></main>}
 
-  if (!title.endsWith(suffix)) return [title];
+function Matrix({report,metric,select}:{report:ManuReport;metric:Metric;select:(m:Metric)=>void}){
+ const h=report.financial_history;const rows:Array<[Metric,string]>=[["total_revenue","总营收"],["broadcasting_revenue","转播收入"],["adjusted_ebitda","调整后 EBITDA"],["net_debt","净负债"]];
+ return <section id="financials" className="terminal-panel matrix-panel" aria-labelledby="matrix-title"><header className="panel-heading"><div><span className="section-code">SIGNAL MATRIX</span><h2 id="matrix-title">核心财务矩阵</h2></div><p>{h.currency} · {h.unit}</p></header><div className="matrix-scroll" tabIndex={0} aria-label="可横向滚动的五年财务矩阵"><table><thead><tr><th>指标</th>{h.years.map(y=><th key={y}>{y}</th>)}<th>5Y CAGR</th></tr></thead><tbody>{rows.map(([key,label])=><tr key={key} className={metric===key?"is-selected":""}><th scope="row"><button type="button" aria-pressed={metric===key} onClick={()=>select(key)}><i/>{label}</button></th>{h.series[key].map((v,i)=><td key={h.years[i]}>{v.toFixed(1)}</td>)}<td className={(h.cagr_5yr_pct[key]??0)<0?"negative-value":""}>{formatPercent(h.cagr_5yr_pct[key]??0)}</td></tr>)}</tbody></table></div></section>}
 
-  return [title.slice(0, -suffix.length).trim(), suffix].filter(Boolean);
-}
+function Trend({report,metric}:{report:ManuReport;metric:Metric}){
+ const h=report.financial_history;const names:Record<Metric,string>={total_revenue:"总营收",broadcasting_revenue:"转播收入",adjusted_ebitda:"调整后 EBITDA",net_debt:"净负债"};const values=h.series[metric];const W=720,H=240,L=48,R=22,T=20,B=38;const x=(i:number)=>L+i/4*(W-L-R);const y=(v:number)=>T+(800-v)/800*(H-T-B);const points=values.map((v,i)=>`${x(i)},${y(v)}`).join(" ");
+ return <section className="terminal-panel chart-panel" aria-labelledby="trend-title"><header className="panel-heading"><div><span className="section-code">SYNCHRONIZED TREND</span><h2 id="trend-title">{names[metric]}</h2></div><p><i className="active-key"/> 固定 0–800 GBP m</p></header><div className="chart-scroll" tabIndex={0} aria-label="可横向滚动的五年趋势图"><svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${names[metric]} FY2021 至 FY2025 趋势`}>{[0,200,400,600,800].map(t=><g key={t}><line x1={L} x2={W-R} y1={y(t)} y2={y(t)} className="chart-grid"/><text x={L-9} y={y(t)+4} textAnchor="end" className="chart-label">{t}</text></g>)}<line x1={x(4)} x2={x(4)} y1={T} y2={H-B} className="chart-cursor"/><polyline points={points} className="chart-line active"/>{values.map((v,i)=><g key={h.years[i]}><circle cx={x(i)} cy={y(v)} r="4.5" className="chart-point active"/><text x={x(i)} y={H-13} textAnchor="middle" className="chart-year">{h.years[i]}</text></g>)}</svg></div><p className="chart-note">选择矩阵行或异常后同步更新；坐标轴、基线与期间位置保持不变。</p></section>}
 
-function LoadingState() {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-[#f4f1ea] px-6 text-[#181611]">
-      <div className="w-full max-w-md" role="status" aria-live="polite">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8c1d28]">
-          MANU Investment Report
-        </p>
-        <h1 className="mt-5 text-3xl font-semibold tracking-tight">
-          正在加载报告数据
-        </h1>
-        <div className="mt-8 h-1 overflow-hidden rounded-full bg-black/10">
-          <div className="h-full w-2/5 animate-pulse rounded-full bg-[#8c1d28]" />
-        </div>
-      </div>
-    </main>
-  );
-}
+function Rail({selected,choose}:{selected:string;choose:(s:Signal)=>void}){
+ const current=signals.find(s=>s.id===selected)??signals[0];
+ return <aside className="anomaly-rail" aria-labelledby="rail-title"><header className="rail-heading"><div><span className="section-code">RANKED SIGNALS</span><h2 id="rail-title">异常轨道</h2></div><span>05</span></header><p className="rail-intro">按评级影响与证据强度排序。选择一项同步中央证据。</p><div className="rail-list">{signals.map(s=><button key={s.id} type="button" aria-pressed={selected===s.id} className={selected===s.id?"is-selected":""} onClick={()=>choose(s)}><span className="signal-rank">{s.no}</span><span className={`signal-glyph state-${s.state}`}>{s.mark}</span><span className="signal-copy"><strong>{s.title}</strong><small>{s.basis}</small></span><span className="signal-status">{s.state}</span></button>)}</div><div className="signal-detail" aria-live="polite"><span className="section-code">IMPACT / {current.no}</span><h3>{current.impact}</h3><p>{current.detail}</p><a href={current.href}>定位到相关证据 ↘</a></div></aside>}
 
-function ErrorState({
-  message,
-  onRetry,
-}: {
-  message: string;
-  onRetry: () => void;
-}) {
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-[#f4f1ea] px-6 text-[#181611]">
-      <section
-        className="w-full max-w-xl border-t-4 border-[#8c1d28] bg-white p-8 shadow-sm"
-        aria-live="assertive"
-      >
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8c1d28]">
-          Data unavailable
-        </p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight">
-          暂时无法读取报告
-        </h1>
-        <p className="mt-4 leading-7 text-black/65">{message}</p>
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-8 rounded-sm bg-[#181611] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#8c1d28] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#8c1d28]"
-        >
-          重新加载
-        </button>
-      </section>
-    </main>
-  );
-}
+function Report({report}:{report:ManuReport}){
+ const [selected,setSelected]=useState("debt");const [metric,setMetric]=useState<Metric>("net_debt");const summary=report.executive_summary;const current=signals.find(s=>s.id===selected)??signals[0];const choose=(s:Signal)=>{setSelected(s.id);if(s.metric)setMetric(s.metric)};
+ return <main className="report-shell"><header className="topbar"><div className="brand-block"><strong>MANU</strong><span>REPORT SNAPSHOT</span></div><div className="snapshot-strip"><span className="rating-chip"><b>{summary.rating.replace(" (Hold)","")}</b> HOLD</span><span><b>{formatPercent(summary.upside_pct)}</b> UPSIDE</span><span><b>FY2025</b> PERIOD</span><span className="valid-state"><i>✓</i><b>API VALID</b> STATIC</span></div></header><div className="workspace-grid">
+ <nav className="side-nav" aria-label="报告分区"><div><span className="nav-label">MONITOR</span><a href="#overview" className="is-current"><span>01</span> 总览</a><a href="#financials"><span>02</span> 财务趋势</a><a href="#valuation"><span>03</span> 估值对比</a><a href="#risks"><span>04</span> 风险 / 催化剂</a><a href="#quality"><span>05</span> 数据质量 <b>5</b></a></div><div className="nav-footnote"><span>DATA BASIS</span><p>FY2021–FY2025<br/>本地静态报告快照</p></div></nav>
+ <div className="mobile-queue" aria-label="高优先级异常">{signals.map(s=><button key={s.id} className={selected===s.id?"is-selected":""} type="button" onClick={()=>choose(s)}><span>{s.no} {s.mark}</span>{s.title}</button>)}</div>
+ <div className="decision-surface"><section id="overview" className="overview-panel"><div><span className="section-code">DECISION SURFACE / MANU</span><h1>持有判断下，<br/><em>先看异常。</em></h1><p>{report.meta.subject_company} · 静态研究快照，不代表实时行情。</p></div><dl><div><dt>当前价格</dt><dd>{formatMoney(summary.current_price_usd)}</dd></div><div className="price-target"><dt>目标价格</dt><dd>{formatMoney(summary.target_price_usd)}</dd></div><div><dt>目标价 EUR</dt><dd>{formatMoney(summary.target_price_eur)}</dd></div></dl></section>
+ <div className="desktop-main-grid"><div className="core-stack"><Matrix report={report} metric={metric} select={setMetric}/><Trend report={report} metric={metric}/></div><Rail selected={selected} choose={choose}/></div>
+ <section className="mobile-detail" aria-live="polite"><span className="section-code">SELECTED / {current.no}</span><h2>{current.impact}</h2><p>{current.detail}</p></section>
+ <section className="thesis-band"><header className="panel-heading"><div><span className="section-code">CORE THESIS</span><h2>核心投资逻辑</h2></div></header><ol>{summary.core_thesis.map((item,i)=><li key={item}><span>{String(i+1).padStart(2,"0")}</span><p>{item}</p></li>)}</ol></section>
+ <FinancialSection report={report}/><ValuationSection report={report}/><SwotSection report={report}/><RecommendationSection report={report}/>
+ <section id="quality" className="quality-section"><header><div><span className="section-code">DATA QUALITY / 05</span><h2>原报告口径差异</h2></div><p>保留原报告中的数值矛盾，不在展示层擅自修正。</p></header><div>{report.data_quality_notes.map((note,i)=><article key={note.path}><span>Q{String(i+1).padStart(2,"0")}</span><div><code>{note.path}</code><p>{note.issue}</p></div></article>)}</div></section></div></div>
+ <footer className="report-footer"><span>{report.meta.institution} · {report.meta.author}</span><span>GET /api/report · 静态快照</span></footer></main>}
 
-function MetricCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border-t border-black/25 pt-4">
-      <dt className="text-xs font-semibold uppercase tracking-[0.12em] text-black/50">
-        {label}
-      </dt>
-      <dd className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-        {value}
-      </dd>
-    </div>
-  );
-}
-
-function ReportPage({ report }: { report: ManuReport }) {
-  const { meta, executive_summary: summary } = report;
-  const titleLines = splitReportTitle(meta.report_title);
-
-  return (
-    <main className="min-h-screen bg-[#f4f1ea] text-[#181611]">
-      <header className="border-b border-black/15 bg-[#181611] text-white">
-        <div className="mx-auto max-w-6xl px-6 py-5 sm:px-10">
-          <div className="flex items-center justify-between gap-6 text-xs font-semibold uppercase tracking-[0.18em]">
-            <span>{meta.ticker} Investment Report</span>
-            <span className="text-white/55">Validated via /api/report</span>
-          </div>
-        </div>
-      </header>
-
-      <section className="mx-auto max-w-6xl px-6 py-16 sm:px-10 sm:py-24">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_0.6fr] lg:items-end">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#8c1d28]">
-              Equity Research · {meta.ticker}
-            </p>
-            <h1 className="mt-5 max-w-4xl text-5xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-7xl">
-              {titleLines.map((line) => (
-                <span key={line} className="block">
-                  {line}
-                </span>
-              ))}
-            </h1>
-            <p className="mt-6 max-w-3xl text-lg leading-8 text-black/60">
-              {meta.subject_company}
-            </p>
-          </div>
-          <div className="border-l-4 border-[#8c1d28] pl-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-black/50">
-              Investment rating
-            </p>
-            <p className="mt-2 text-4xl font-semibold tracking-tight text-[#8c1d28]">
-              {summary.rating}
-            </p>
-          </div>
-        </div>
-
-        <dl className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <MetricCard
-            label="当前价格"
-            value={formatMoney(summary.current_price_usd)}
-          />
-          <MetricCard
-            label="目标价 USD"
-            value={formatMoney(summary.target_price_usd)}
-          />
-          <MetricCard
-            label="目标价 EUR"
-            value={formatMoney(summary.target_price_eur)}
-          />
-          <MetricCard label="潜在涨幅" value={`${summary.upside_pct}%`} />
-        </dl>
-      </section>
-
-      <section className="bg-white/65">
-        <div className="mx-auto grid max-w-6xl gap-14 px-6 py-16 sm:px-10 sm:py-20 lg:grid-cols-[1.25fr_0.75fr]">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8c1d28]">
-              Core thesis
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-              核心投资逻辑
-            </h2>
-            <ol className="mt-8 space-y-7">
-              {summary.core_thesis.map((item, index) => (
-                <li key={item} className="grid grid-cols-[2.25rem_1fr] gap-3">
-                  <span className="font-mono text-sm text-[#8c1d28]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <p className="text-lg leading-8 text-black/75">{item}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          <aside className="border-t-4 border-[#181611] bg-[#ece7dc] p-7 sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-black/50">
-              Risk factors
-            </p>
-            <h2 className="mt-3 text-2xl font-semibold">主要风险</h2>
-            <ul className="mt-6 divide-y divide-black/15">
-              {summary.risk_factors.map((risk) => (
-                <li key={risk} className="py-5 first:pt-0 last:pb-0">
-                  <p className="leading-7 text-black/70">{risk}</p>
-                </li>
-              ))}
-            </ul>
-          </aside>
-        </div>
-      </section>
-
-      <FinancialSection report={report} />
-      <ValuationSection report={report} />
-      <SwotSection report={report} />
-      <RecommendationSection report={report} />
-
-      <section className="mx-auto max-w-6xl px-6 py-16 sm:px-10 sm:py-20">
-        <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8c1d28]">
-            Data quality
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-            数据质量说明
-          </h2>
-          <p className="mt-4 leading-7 text-black/60">
-            以下内容保留原报告中的数值矛盾或口径差异，不在展示层擅自修正。
-          </p>
-        </div>
-
-        <div className="mt-10 divide-y divide-black/15 border-y border-black/15">
-          {report.data_quality_notes.map((note, index) => (
-            <article
-              key={`${note.path}-${index}`}
-              className="grid gap-3 py-7 md:grid-cols-[2.25rem_16rem_1fr] md:gap-6"
-            >
-              <span className="font-mono text-sm text-[#8c1d28]">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <code className="break-words text-sm text-black/55">
-                {note.path}
-              </code>
-              <p className="leading-7 text-black/75">{note.issue}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <footer className="border-t border-black/15 px-6 py-8 text-center text-xs uppercase tracking-[0.14em] text-black/45">
-        {meta.institution} · {meta.author}
-      </footer>
-    </main>
-  );
-}
-
-export default function Home() {
-  const [state, setState] = useState<ReportViewState>({ status: "loading" });
-  const [requestKey, setRequestKey] = useState(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetchManuReport({ signal: controller.signal })
-      .then((report) => setState({ status: "success", report }))
-      .catch((error: unknown) => {
-        if (controller.signal.aborted) return;
-
-        setState({
-          status: "error",
-          message:
-            error instanceof Error ? error.message : "报告数据暂时无法读取。",
-        });
-      });
-
-    return () => controller.abort();
-  }, [requestKey]);
-
-  if (state.status === "loading") return <LoadingState />;
-  if (state.status === "error") {
-    return (
-      <ErrorState
-        message={state.message}
-        onRetry={() => {
-          setState({ status: "loading" });
-          setRequestKey((key) => key + 1);
-        }}
-      />
-    );
-  }
-
-  return <ReportPage report={state.report} />;
-}
+export default function Home(){const[state,setState]=useState<State>({status:"loading"});const[key,setKey]=useState(0);useEffect(()=>{const c=new AbortController();fetchManuReport({signal:c.signal}).then(report=>setState({status:"success",report})).catch((error:unknown)=>{if(!c.signal.aborted)setState({status:"error",message:error instanceof Error?error.message:"报告数据暂时无法读取。"})});return()=>c.abort()},[key]);if(state.status==="loading")return <Loading/>;if(state.status==="error")return <ErrorView message={state.message} retry={()=>{setState({status:"loading"});setKey(k=>k+1)}}/>;return <Report report={state.report}/>}
