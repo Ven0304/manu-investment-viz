@@ -76,10 +76,10 @@ export function FinancialSection({ report }: ReportSectionProps) {
       <SectionIntro index="02" eyebrow="FINANCIAL EVIDENCE" title="改善来自经营效率，约束来自资产负债表" description="FY2021–FY2025 的证据需要一起读：营收恢复和 EBITDA 转正并没有自动消除净负债压力。" />
 
       <dl className="evidence-ledger" aria-label="FY2025 财务摘要">
-        <div><dt>FY2025 总营收</dt><dd>{toMoney(history.series.total_revenue[lastIndex])}</dd><span>report currency / unit</span></div>
-        <div><dt>调整后 EBITDA</dt><dd>{toMoney(history.series.adjusted_ebitda[lastIndex])}</dd><span>FY2025</span></div>
-        <div><dt>净负债</dt><dd>{toMoney(history.series.net_debt[lastIndex])}</dd><span>FY2025</span></div>
-        <div><dt>营收五年 CAGR</dt><dd>{formatPercent(history.cagr_5yr_pct.total_revenue ?? 0)}</dd><span>reported calculation</span></div>
+        <div><dt>FY2025 总营收</dt><dd>{toMoney(history.series.total_revenue[lastIndex])}</dd><dd className="metric-note">report currency / unit</dd></div>
+        <div><dt>调整后 EBITDA</dt><dd>{toMoney(history.series.adjusted_ebitda[lastIndex])}</dd><dd className="metric-note">FY2025</dd></div>
+        <div><dt>净负债</dt><dd>{toMoney(history.series.net_debt[lastIndex])}</dd><dd className="metric-note">FY2025</dd></div>
+        <div><dt>营收五年 CAGR</dt><dd>{formatPercent(history.cagr_5yr_pct.total_revenue ?? 0)}</dd><dd className="metric-note">reported calculation</dd></div>
       </dl>
 
       <figure className="evidence-breakout">

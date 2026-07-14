@@ -4,8 +4,8 @@
   --canvas: #f3efe5;
   --paper: #fffdf7;
   --ink: #1d1b16;
-  --muted: #6c665c;
-  --faint: #a49c8f;
+  --muted: #5d5952;
+  --faint: #625d55;
   --rule: #cfc7b8;
   --rule-strong: #968d7f;
   --accent: #245e73;
@@ -13,7 +13,7 @@
   --signal: #8a2e35;
   --signal-soft: #f0dedf;
   --success: #2f6b52;
-  --warning: #9a641a;
+  --warning: #765015;
   --error: #9a3b37;
   --focus: #0c6d91;
   --font-display: "Noto Serif SC", "Songti SC", SimSun, Georgia, serif;
@@ -122,8 +122,8 @@ button { font: inherit; }
 .evidence-ledger > div:first-child { padding-left: 0; }
 .evidence-ledger > div:last-child { padding-right: 0; border-right: 0; }
 .evidence-ledger dt { color: var(--muted); font-size: 0.7rem; line-height: 1.4; }
-.evidence-ledger dd { margin: 0.55rem 0 0; font: 700 1.15rem/1.25 var(--font-data); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.evidence-ledger span { display: block; margin-top: 0.45rem; color: var(--faint); font: 500 0.6rem/1.35 var(--font-data); text-transform: uppercase; }
+.evidence-ledger dd:not(.metric-note) { margin: 0.55rem 0 0; font: 700 1.15rem/1.25 var(--font-data); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.evidence-ledger .metric-note { display: block; margin: 0.45rem 0 0; color: var(--faint); font: 600 0.65rem/1.35 var(--font-data); letter-spacing: 0.01em; text-transform: uppercase; }
 
 .evidence-breakout, .peer-breakout { margin: 3.2rem -1.8rem 0; padding: 1.8rem; border-block: 2px solid var(--ink); background: var(--paper); }
 .evidence-breakout figcaption, .peer-breakout figcaption { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; }
