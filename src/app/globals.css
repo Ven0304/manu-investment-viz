@@ -9,8 +9,8 @@
   --line-strong: #495451;
   --ink: #f3f6f1;
   --ink-soft: #c9d0cc;
-  --muted: #9da8a3;
-  --dim: #74807b;
+  --muted: #b2bcb7;
+  --dim: #9aa59f;
   --accent: #d8a942;
   --signal: #62c6b3;
   --danger: #ed8984;
@@ -71,6 +71,7 @@ button:focus-visible, a:focus-visible, [tabindex="0"]:focus-visible {
 .brand-block strong { color: var(--accent); font-size: 18px; letter-spacing: .03em; }
 .brand-block span { color: var(--muted); font: 10px/1.2 ui-monospace, Consolas, monospace; letter-spacing: .08em; }
 .snapshot-strip { display: flex; min-width: 0; max-width: 100%; align-items: stretch; overflow-x: auto; scrollbar-width: thin; }
+.snapshot-strip:focus-visible { outline-offset: -3px; }
 .snapshot-strip > span { display: flex; align-items: center; gap: 7px; min-width: 130px; padding: 0 16px; border-right: 1px solid var(--line); color: var(--dim); font: 10px/1.2 ui-monospace, Consolas, monospace; letter-spacing: .08em; white-space: nowrap; }
 .snapshot-strip b { color: var(--ink); font-size: 12px; }
 .snapshot-strip .rating-chip { min-width: 150px; }
