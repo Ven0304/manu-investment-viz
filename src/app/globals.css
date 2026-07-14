@@ -22,7 +22,7 @@
   --fast: 140ms;
 }
 
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; transition-property: none; }
 html { background: var(--canvas); color: var(--ink); scroll-padding-top: 7rem; }
 body { margin: 0; min-width: 320px; background: var(--canvas); color: var(--ink); font-family: var(--font-body); }
 a { color: inherit; text-decoration: none; }
@@ -31,13 +31,13 @@ button { font: inherit; }
 ::selection { background: var(--signal-soft); color: var(--ink); }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
 
-.skip-link { position: fixed; z-index: 100; left: 1rem; top: 0.75rem; padding: 0.75rem 1rem; background: var(--ink); color: var(--paper); transform: translateY(-150%); }
+.skip-link { position: fixed; z-index: 100; left: 1rem; top: 0.75rem; padding: 0.75rem 1rem; background: var(--ink); color: var(--paper); transform: translateY(-150%); transition: transform var(--fast) ease-out; }
 .skip-link:focus { transform: translateY(0); }
 
 .report-page { min-height: 100vh; overflow-x: clip; }
 .report-topbar { position: sticky; z-index: 40; top: 0; border-bottom: 1px solid #2f2c26; background: var(--ink); color: var(--paper); }
 .topbar-inner { width: min(100% - 2rem, 1320px); min-height: 64px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
-.wordmark { display: inline-flex; align-items: baseline; gap: 0.75rem; min-height: 44px; padding-block: 0.75rem; }
+.wordmark { display: inline-flex; align-items: baseline; justify-content: center; gap: 0.75rem; min-width: 44px; min-height: 44px; padding-block: 0.75rem; transition: color var(--fast) ease-out; }
 .wordmark span { font: 700 1rem/1 var(--font-data); letter-spacing: 0.08em; }
 .wordmark small, .topbar-inner > p { font: 600 0.68rem/1.4 var(--font-body); letter-spacing: 0.13em; color: #c6c0b5; }
 .topbar-inner > p { margin: 0; text-transform: uppercase; }
@@ -204,7 +204,7 @@ thead th:not(:first-child) { text-align: right; }
 .quality-register p { margin: 0.55rem 0 0; color: var(--muted); font-size: 0.84rem; line-height: 1.75; }
 .report-footer { display: flex; justify-content: space-between; gap: 1rem; padding: 1.6rem 0 2.8rem; color: var(--muted); font: 600 0.68rem/1.4 var(--font-data); letter-spacing: 0.06em; }
 .report-footer p { margin: 0; }
-.report-footer a { color: var(--accent); min-height: 44px; display: inline-flex; align-items: center; gap: 0.35rem; }
+.report-footer a { color: var(--accent); min-height: 44px; display: inline-flex; align-items: center; gap: 0.35rem; transition: color var(--fast) ease-out; }
 
 .state-page { display: grid; place-items: center; min-height: 100vh; padding: 2rem; background: var(--canvas); }
 .state-shell { width: min(100%, 620px); padding: 2.4rem 0; border-block: 2px solid var(--ink); }
