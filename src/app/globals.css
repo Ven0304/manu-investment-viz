@@ -299,7 +299,7 @@ th, td { border-bottom: 1px solid var(--line); }
 @media (max-width: 560px) {
   body { font-size: 14px; }
   .snapshot-strip > span { min-width: 118px; padding: 0 12px; }
-  .snapshot-strip > span:nth-child(2) b { min-width: 0; max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .snapshot-strip > span:nth-child(2) b { display: inline-block; min-width: 0; max-width: 48px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .overview-panel h1 { font-size: 36px; }
   .overview-panel dl { grid-template-columns: 1fr 1fr; }
   .overview-panel dd { font-size: 18px; }
