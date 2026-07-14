@@ -85,14 +85,15 @@ function useActiveSection(): {
         Number.parseFloat(
           getComputedStyle(document.documentElement).scrollPaddingTop,
         ) || 0;
-      const sectionOffset = sections[0]
-        ? Number.parseFloat(getComputedStyle(sections[0]).scrollMarginTop) || 0
-        : 0;
-      const readingLine = Math.max(documentOffset, sectionOffset, 112);
       let current = sections[0];
 
       for (const section of sections) {
-        if (section.getBoundingClientRect().top <= readingLine + 2) {
+        const sectionOffset =
+          Number.parseFloat(getComputedStyle(section).scrollMarginTop) || 0;
+        const activationLine = Math.max(documentOffset, sectionOffset, 112);
+        const sectionTop = section.getBoundingClientRect().top;
+
+        if (sectionTop <= activationLine + 8) {
           current = section;
         } else {
           break;
@@ -159,10 +160,7 @@ function useActiveSection(): {
         Number.parseFloat(getComputedStyle(destination).scrollMarginTop) || 0;
       const scrollIsStable = Math.abs(currentScrollY - previousScrollY) < 0.5;
       const destinationIsAligned =
-        Math.abs(destinationRect.top - scrollMargin) <= 3;
-      const destinationIsVisible =
-        destinationRect.bottom > scrollMargin &&
-        destinationRect.top < window.innerHeight;
+        Math.abs(destinationRect.top - scrollMargin) <= 8;
       const reachedPageBoundary =
         Math.abs(
           document.documentElement.scrollHeight -
@@ -172,7 +170,7 @@ function useActiveSection(): {
 
       stableFrames =
         scrollIsStable &&
-        (destinationIsAligned || destinationIsVisible || reachedPageBoundary)
+        (destinationIsAligned || reachedPageBoundary)
           ? stableFrames + 1
           : 0;
       previousScrollY = currentScrollY;
