@@ -106,6 +106,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .object-sidebar nav button { display: grid; min-height: 58px; grid-template-columns: 1.9rem 1fr auto; align-items: center; gap: var(--space-2); border: 0; border-left: 3px solid transparent; padding: var(--space-2) var(--space-3); background: transparent; text-align: left; transition: background-color var(--fast) ease-out, border-color var(--fast) ease-out; }
 .object-sidebar nav button:hover { background: var(--surface-muted); }
 .object-sidebar nav button[aria-current="page"] { border-left-color: var(--accent); background: var(--accent-soft); }
+.object-sidebar nav button[aria-current="page"] .nav-index,
+.object-sidebar nav button[aria-current="page"] small { color: #4b5650; }
 .object-sidebar nav button > span:nth-child(2) { display: flex; min-width: 0; flex-direction: column; }
 .object-sidebar nav button strong { font-size: 0.86rem; }
 .object-sidebar nav button small { color: var(--muted); font-size: 0.68rem; }
@@ -138,6 +140,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .metric:last-child { border-right: 0; }
 .metric-emphasis { background: var(--accent-soft); }
 .metric-label, .metric-note { margin: 0; color: var(--muted); font-size: 0.72rem; line-height: 1.45; }
+#metric-target .metric-label, #metric-target .metric-note { color: #4b5650; }
 .metric-label { font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
 .metric-value {
   min-width: 0;
