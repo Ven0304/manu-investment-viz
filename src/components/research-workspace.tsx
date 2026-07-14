@@ -493,6 +493,13 @@ export function ResearchWorkspace({ report }: { report: ManuReport }) {
           <label className="object-search"><span>筛选研究对象</span><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="财务、估值、质量…" /></label>
           <nav>
             {filteredObjects.map((item, index) => <button key={item.id} type="button" aria-current={activeObject === item.id ? "page" : undefined} onClick={() => selectObject(item.id)}><span className="nav-index">{String(index + 1).padStart(2, "0")}</span><span><strong>{item.label}</strong><small>{item.meta}</small></span>{item.id === "quality" && <b>{report.data_quality_notes.length}</b>}</button>)}
+            {filteredObjects.length === 0 && (
+              <div className="object-empty" role="status">
+                <strong>没有匹配的研究对象</strong>
+                <p>清除或更改筛选词即可恢复对象列表。</p>
+                <button type="button" onClick={() => setQuery("")}>清除筛选</button>
+              </div>
+            )}
           </nav>
           <div className="sidebar-note"><span aria-hidden="true">◎</span><p><strong>当前数据范围</strong>本地报告快照，不含实时行情、外部来源或保存功能。</p></div>
         </aside>

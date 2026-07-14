@@ -111,6 +111,11 @@ button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-v
 .object-sidebar nav button small { color: var(--muted); font-size: 0.68rem; }
 .nav-index { color: var(--muted); font: 0.66rem/1 ui-monospace, Consolas, monospace; }
 .object-sidebar nav button b { display: grid; min-width: 1.5rem; height: 1.5rem; place-items: center; border-radius: 999px; background: var(--signal-soft); color: var(--signal); font-size: 0.7rem; }
+.object-empty { margin: var(--space-2); border-left: 2px solid var(--line-strong); padding: var(--space-4); background: var(--surface-muted); }
+.object-empty strong { display: block; font-size: 0.8rem; }
+.object-empty p { margin: var(--space-2) 0 0; color: var(--muted); font-size: 0.72rem; line-height: 1.55; }
+.object-empty button { display: inline-flex; min-height: 44px; align-items: center; margin-top: var(--space-2); border: 0; border-bottom: 1px solid var(--accent); border-left: 0; padding: 0; background: transparent; color: var(--accent); font-size: 0.72rem; font-weight: 750; }
+.object-empty button:hover { background: transparent; color: var(--signal); }
 .sidebar-note { display: flex; gap: var(--space-3); margin: var(--space-8) var(--space-2) 0; border-top: 1px solid var(--line); padding-top: var(--space-4); color: var(--muted); font-size: 0.72rem; }
 .sidebar-note > span { color: var(--accent); }
 .sidebar-note p { margin: 0; line-height: 1.55; }
