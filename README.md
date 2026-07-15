@@ -17,6 +17,39 @@
 - [`style-b`](https://github.com/Ven0304/manu-investment-viz/tree/style-b)：财务信号比较分析工作台。
 - [`style-c`](https://github.com/Ven0304/manu-investment-viz/tree/style-c)：证据溯源与对象检查研究终端。
 
+## 项目演进与关键版本节点
+
+项目先以原生静态页面启动，随后完成现代前端栈与受控数据层迁移；在 `main` 稳定后，使用 Vibe Design Arena 基于同一基线创建三个独立 `git worktree` 方案。最终选择 Style A 合入主线，Style B/C 作为可单独运行的备选分支保留。
+
+```text
+1387b52  原生静态页面种子版本（HTML + CSS + JavaScript）
+    │
+cade213  开始 Next.js 应用迁移
+    │
+2849ffa  完成报告区块迁移（Next.js + TypeScript + Tailwind + Zod）
+    │
+8ea94cd  移除已被迁移替代的 app.js / index.html / styles.css
+    │
+d29b5f7  固化 Arena worktree 忽略规则，作为三方案共同基线
+    ├── 6c55e29  Style A 实现 → 72c2d1d 最终润色 → ae0d014 QA 修复 → main
+    ├── 93d5bdd  Style B 实现 → 5211912 QA 修复（保留在 style-b）
+    └── dc21324  Style C 实现 → 2dd8949 QA 修复（保留在 style-c）
+             │
+          f01c1be  记录已选设计分支
+```
+
+| 节点 | 提交 | 说明 |
+| --- | --- | --- |
+| 原生版本起点 | [`1387b52`](https://github.com/Ven0304/manu-investment-viz/commit/1387b528ac74882dfc4cc89c11801b2958079a0f) | 种子版本；仓库包含 `index.html`、`styles.css` 和 `app.js`，尚未引入框架。 |
+| 迁移启动 | [`cade213`](https://github.com/Ven0304/manu-investment-viz/commit/cade213) | 建立 Next.js 应用骨架，并引入 TypeScript、Tailwind 等现代工程配置。 |
+| 迁移完成 | [`2849ffa`](https://github.com/Ven0304/manu-investment-viz/commit/2849ffa0e9c9e325eeef192ec64d722c6a09a66b) | 报告页面及组件迁移完成；此前用于迁移的 `codex/nextjs-migration` 已合入 `main` 并删除。 |
+| 清理旧静态实现 | [`8ea94cd`](https://github.com/Ven0304/manu-investment-viz/commit/8ea94cd98a7a58a73356ac5403f83eb0047572d5) | 删除迁移后不再使用的原生 `app.js`、`index.html` 与 `styles.css`。 |
+| Arena 共同基线 | [`d29b5f7`](https://github.com/Ven0304/manu-investment-viz/commit/d29b5f77f40c6fb63e9cb0430ab4018b86641248) | 为三套 worktree 设计方案准备共同基线与忽略规则。 |
+| 选中方案：Style A | [`6c55e29`](https://github.com/Ven0304/manu-investment-viz/commit/6c55e29437c943efa5c9af2ad09f81401d369e46) → [`ae0d014`](https://github.com/Ven0304/manu-investment-viz/commit/ae0d01422a7588c6f9d1736cde6e4c12406cd2d4) | 实现、视觉润色与可访问性/交互 QA 后，沿主线进入当前版本。 |
+| 保留方案：Style B | [`93d5bdd`](https://github.com/Ven0304/manu-investment-viz/commit/93d5bddb9e207af4ec32d4de9a9488942cf29b9b) → [`5211912`](https://github.com/Ven0304/manu-investment-viz/commit/5211912) | 未合入 `main`，完整历史保留在 [`style-b`](https://github.com/Ven0304/manu-investment-viz/tree/style-b)。 |
+| 保留方案：Style C | [`dc21324`](https://github.com/Ven0304/manu-investment-viz/commit/dc21324de1ef7a27f5bd2671bcdcbf0c9455a4fe) → [`2dd8949`](https://github.com/Ven0304/manu-investment-viz/commit/2dd8949) | 未合入 `main`，完整历史保留在 [`style-c`](https://github.com/Ven0304/manu-investment-viz/tree/style-c)。 |
+| 当前主线记录 | [`f01c1be`](https://github.com/Ven0304/manu-investment-viz/commit/f01c1bee2eb70fd22c3ed31f6dc91fc9e5912918) | 记录最终选择 Style A，以及 Style B/C 的保留方式。 |
+
 ## 当前技术栈
 
 - **Next.js App Router**：统一组织 React 页面与 API Route。
