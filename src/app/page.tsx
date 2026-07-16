@@ -144,7 +144,7 @@ function useActiveSection(): {
     lockedSection.current = sectionId;
     setActiveSection(sectionId);
     window.history.replaceState(null, "", `#${sectionId}`);
-    destination.scrollIntoView({ block: "start", behavior: "auto" });
+    window.scrollTo({ top: destination.offsetTop, behavior: "auto" });
 
     if (settleFrame.current !== null) {
       cancelAnimationFrame(settleFrame.current);
@@ -311,9 +311,46 @@ function ReportPage({ report }: { report: ManuReport }) {
   const { meta, executive_summary: summary } = report;
   const title = useMemo(() => meta.report_title.replace("投资研究报告", "").trim(), [meta.report_title]);
 
+  const enterReading = useCallback((event: ReactMouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const destination = document.getElementById("reading-start");
+    if (!destination) return;
+    event.preventDefault();
+    window.history.replaceState(null, "", "#judgment");
+    destination.scrollIntoView({ block: "start", behavior: "auto" });
+  }, []);
+
   return (
     <main className="report-page">
       <a className="skip-link" href="#report-content">跳到报告正文</a>
+      <section className="cover-hero" aria-labelledby="cover-title">
+        <div className="cover-hero__shade" aria-hidden="true" />
+        <div className="cover-hero__topline">
+          <a href="#cover-title" className="cover-wordmark" aria-label="MANU 投资研究报告首页">
+            <span>MANU</span>
+            <small>INVESTMENT DOSSIER</small>
+          </a>
+          <p>INDEPENDENT EQUITY RESEARCH</p>
+        </div>
+        <div className="cover-hero__content">
+          <p className="cover-kicker">EQUITY RESEARCH · NYSE: {meta.ticker}</p>
+          <h1 id="cover-title">曼彻斯特联队<br />投资研究报告</h1>
+          <p className="cover-deck">品牌现金流与效率改善仍有支撑，但杠杆和估值口径限制安全边际。</p>
+          <div className="cover-verdict" aria-label="报告摘要">
+            <span>{summary.rating}</span>
+            <span>{formatMoney(summary.target_price_usd)} 目标价</span>
+            <span>{formatPercent(summary.upside_pct)} 潜在涨幅</span>
+          </div>
+          <a className="cover-read" href="#reading-start" onClick={enterReading}>
+            <span>详细阅读</span><span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <p className="cover-credit">Photo: Arne Müseler / arne-mueseler.com / CC BY-SA 3.0 · Cropped and color-adjusted</p>
+        <a className="cover-scroll" href="#reading-start" onClick={enterReading} aria-label="进入报告正文">
+          <span>SCROLL TO READ</span><i aria-hidden="true" />
+        </a>
+      </section>
+      <div id="reading-start" className="reading-start" aria-hidden="true" />
       <header className="report-topbar">
         <div className="topbar-inner">
           <a href="#judgment" onClick={(event) => onNavigate(event, "judgment")} className="wordmark" aria-label="返回投资判断"><span>{meta.ticker}</span><small>INVESTMENT DOSSIER</small></a>
@@ -328,7 +365,11 @@ function ReportPage({ report }: { report: ManuReport }) {
 
         <article id="report-content" className="report-content">
           <section id="judgment" className="hero-section chapter-section" aria-labelledby="report-title">
-            <p className="kicker">EQUITY RESEARCH · {meta.ticker}</p>
+            <div className="article-masthead">
+              <span>MANU INVESTMENT DOSSIER</span>
+              <span>INDEPENDENT EQUITY RESEARCH</span>
+            </div>
+            <p className="kicker">EQUITY RESEARCH · NYSE: {meta.ticker}</p>
             <h1 id="report-title">{title}<span>投资研究报告</span></h1>
             <p className="subject-line">{meta.subject_company}</p>
 
