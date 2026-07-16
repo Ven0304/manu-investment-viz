@@ -1,0 +1,73 @@
+export type Locale = "zh-CN" | "en";
+
+export const copy = {
+  "zh-CN": {
+    language: "语言", read: "阅读", reportTitle: "投资研究报告", deck: "品牌现金流与效率改善仍有支撑，但杠杆和估值口径限制安全边际。",
+    rating: "投资评级", current: "当前价", target: "目标价", upside: "潜在涨幅", validated: "本地报告数据已校验",
+    contents: ["投资判断", "财务证据", "估值复核", "风险与建议", "质量说明"],
+    navNote: "沿结论顺序阅读；数字与口径在相邻证据处复核。", return: "返回结论",
+    loading: "正在建立结论与证据索引", loadingCopy: "正在从本地报告接口读取并校验完整研究数据。",
+    error: "报告暂时无法读取", retry: "重新加载报告", skip: "跳到报告正文",
+  },
+  en: {
+    language: "Language", read: "Read", reportTitle: "Investment Research Report", deck: "Brand cash flows and operating efficiencies remain supportive, but leverage and valuation inconsistencies constrain the margin of safety.",
+    rating: "Investment rating", current: "Current price", target: "Target price", upside: "Upside", validated: "Local report data validated",
+    contents: ["Investment View", "Financial Evidence", "Valuation Review", "Risks & Recommendation", "Data Quality"],
+    navNote: "Follow the conclusion in sequence; verify figures and definitions against the adjacent evidence.", return: "Back to conclusion",
+    loading: "Building the conclusion-to-evidence index", loadingCopy: "Loading and validating the complete research dataset from the local report API.",
+    error: "The report is temporarily unavailable", retry: "Reload report", skip: "Skip to report",
+  },
+} as const;
+
+const english = new Map<string, string>([
+  ["持有 (Hold)", "Hold"],
+  ["曼联（Manchester United plc / Manchester United Football Club）", "Manchester United plc / Manchester United Football Club"],
+  ["纽约证券交易所（NYSE）", "New York Stock Exchange (NYSE)"],
+  ["西安交通大学", "Xi’an Jiaotong University"],
+  ["账面净利润常年为负，主要受巨额球员摊销影响。", "Reported net income has remained negative, largely because of substantial player-amortisation charges."],
+  ["拉特克利夫爵士（INEOS）入主并接管足球运营权，推行降本增效措施，带来管理重构与效率提升。", "Sir Jim Ratcliffe and INEOS have taken control of football operations, pairing management restructuring with a sharper cost and efficiency programme."],
+  ["曼联拥有11亿全球粉丝基础，新签阿迪达斯（10年9亿英镑）及骁龙顶级赞助合同锁定长期现金流，商业护城河稳固。", "A global following of roughly 1.1 billion, together with the new £900 million, ten-year Adidas agreement and Qualcomm Snapdragon sponsorship, underpins long-duration commercial cash flows."],
+  ["作为全球顶级体育IP，品牌价值具有抗周期和“安全溢价”特征。", "As one of sport’s most recognisable global franchises, Manchester United retains a degree of defensive brand value and scarcity premium."],
+  ["老特拉福德球场扩建计划带来的财务杠杆压力及执行风险。", "The Old Trafford redevelopment could increase leverage and carries material execution risk."],
+  ["长期无缘欧冠导致赞助合同惩罚性减值风险。", "A prolonged absence from the Champions League could trigger punitive sponsorship adjustments."],
+  ["英超PSR（盈利与可持续发展规则）收紧对引援投入的限制。", "Tighter Premier League Profitability and Sustainability Rules may constrain transfer spending."],
+  ["原文称结合历史数据修正后最终为42.87亿欧元（含非经营性资产调整），但未展开调整过程。", "The source report raises enterprise value to €4.287 billion after historical and non-operating asset adjustments, but does not disclose the bridge."],
+  ["数据来源为曼联2021-2025财年财报，单位统一为百万欧元；英镑按1:1.1487换算。", "Source data comes from Manchester United’s FY2021–FY2025 reports. Figures are presented in EUR millions, with GBP converted at 1:1.1487."],
+  ["马颢儒", "Haoru Ma"],
+  ["转播收入韧性", "Broadcast resilience"], ["安全溢价", "Scarcity premium"], ["全球品牌变现", "Global brand monetisation"],
+  ["管理割裂", "Fragmented management"], ["转会回报偏低", "Weak transfer returns"], ["历史债务负担", "Legacy debt burden"],
+  ["INEOS管理重构", "INEOS-led restructuring"], ["商业创新", "Commercial innovation"],
+  ["PSR收紧", "Tighter PSR constraints"], ["地缘政治不确定性", "Geopolitical uncertainty"], ["替代娱乐竞争", "Competition for attention"],
+  ["即使曼联竞技成绩波动，其基础转播分成仍确保每年至少1.2亿英镑收入；英超版权过去三个周期保持7.2%的年复合增长率，显著跑赢同期英国通胀水平3.1%。", "Even with volatile sporting results, baseline distributions provide at least £120 million of annual broadcasting revenue. Premier League rights grew at a 7.2% CAGR over the past three cycles, ahead of UK inflation."],
+  ["在2025年全球地缘冲突加剧背景下，曼联投资具有较强跨境流动性，并保持价值观中立、减少意识形态审查；纽交所上市也使部分英镑资产可置换为美元计价的安全储备。", "The NYSE listing gives the asset cross-border liquidity and converts part of its sterling exposure into a dollar-denominated security, although the claimed safe-haven premium remains qualitative."],
+  ["曼联具有无与伦比的全球品牌认知与商业变现能力，拥有英超最广泛的全球赞助商网络，近十年表现平庸却依然带来可观收入。", "Manchester United’s global recognition and sponsor network continue to generate material revenue despite a decade of inconsistent sporting performance."],
+  ["足球运营与商业运营长期割裂，决策效率低下；如果长期（3年以上）无缘欧冠，阿迪达斯等核心赞助商惩罚性条款将被激活，商业护城河可能被削弱。", "Football and commercial operations have historically been fragmented. More than three years outside the Champions League could activate punitive clauses in major sponsorship contracts."],
+  ["球员转会市场投资回报率较低，溢价引援频繁，原文举例包括霍伊伦、安东尼、芒特、麦克托米奈、滕哈格等。", "Returns on transfer spending have been weak, with repeated premium-priced recruitment and limited realised value."],
+  ["格雷泽家族遗留债务挤压现金支付能力，在高利率环境下产生巨额利息，并通过契约限制俱乐部转会市场投入，接近PSR红线。", "Legacy Glazer-era debt absorbs cash through interest expense and covenant constraints, limiting transfer flexibility near the PSR threshold."],
+  ["拉特克利夫爵士入主后引进曼城系CEO贝拉达、纽卡斯尔联体育总监阿什沃斯，决策逐渐效率化；并可借助英力士体系、尼斯队“双轨制”培养计划及债务处理改善运营。", "The INEOS-led management rebuild is intended to shorten decision chains and improve football operations, supported by group capabilities and a broader player-development network."],
+  ["推出“United+”会员订阅服务，开发NFT数字藏品，2025年试水收入500万镑；球场光伏改造未来可减碳30%。", "United+ subscriptions and other digital products offer incremental monetisation, while stadium energy upgrades may reduce operating intensity."],
+  ["英超盈利与可持续发展规则PSR收紧，2026年工资帽降至60%，限制引援投入；Swiss Ramble估算曼联在PSR计算中处于“极限操作”状态。", "Tighter PSR limits and a proposed 60% wage cap could restrict recruitment; external analysis places the club close to its available headroom."],
+  ["中东赞助商不稳定，如卡塔尔投资局可能转向其他俱乐部；英国脱欧后劳工证政策对引援具有一定影响。", "Sponsor concentration and post-Brexit work-permit rules add uncertainty to commercial relationships and player recruitment."],
+  ["电竞、短视频等替代娱乐分流年轻球迷注意力，足球吸引力下降。", "Gaming, short-form video and other entertainment formats compete for younger supporters’ attention."],  ["商业合作放量，如骁龙胸前赞助续约或新增全球顶级赞助商，有望推动商业收入增速超预期。", "A Snapdragon renewal or another global sponsor could lift commercial revenue above expectations."],
+  ["扩建项目顺利推进，若工期不超支、成本控制达标，将缓解市场对现金流的担忧。", "On-time, on-budget stadium development would ease market concerns over cash-flow pressure."],
+  ["竞技成绩提升，重返欧冠四强及以上行列，可带动转播收入与品牌溢价进一步扩大。", "A return to the latter stages of the Champions League would support broadcasting income and reinforce the brand premium."],
+  ["债务优化，通过再融资降低融资成本，改善自由现金流状况。", "Refinancing that lowers the cost of debt would improve free cash flow."],
+  ["老特拉福德扩建存在超支可能，潜在额外成本达5000万英镑，且当前16.59亿欧元债务规模可能进一步扩大。", "Old Trafford redevelopment could overrun by as much as £50 million and add to the current €1.659 billion debt burden."],
+  ["扩建期间比赛日收入若下滑超8%，或因球迷观赛体验恶化导致会员流失，将对业绩造成冲击。", "A matchday-revenue decline of more than 8%, or membership attrition during construction, would pressure performance."],
+  ["英超转播权续约价格不及预期、UEFA财务公平规则收紧限制引援投入，可能制约球队发展。", "Weaker-than-expected rights pricing or tighter UEFA financial rules could constrain squad investment."],
+  ["长期无缘欧冠可能导致商业赞助降档，核心球员流失也将直接影响球队竞争力。", "A prolonged Champions League absence could reduce sponsorship economics and weaken competitiveness."],
+  ["长期投资者（持有1年以上）", "Long-term investors (over one year)"], ["可逢低布局", "Accumulate selectively on weakness"],
+  ["短期投资者（持有6个月以内）", "Short-term investors (under six months)"], ["建议观望", "Wait for a clearer entry point"],
+  ["风险偏好较低投资者", "Lower-risk investors"], ["谨慎介入", "Approach cautiously"],
+  ["重点关注扩建项目进度与商业收入增长；若目标价回调至16.50美元以下可加大配置。", "Monitor redevelopment progress and commercial growth; consider adding exposure below $16.50."],
+  ["规避扩建初期现金流压力与项目执行不确定性带来的股价波动。", "Avoid near-term volatility from redevelopment cash needs and execution uncertainty."],
+  ["优先关注现金流改善信号，如商业预付款到账、球员转会收入，再考虑介入。", "Wait for clearer cash-flow signals, such as commercial prepayments or player-sale proceeds."],
+  ["4.2.4节企业价值先按预测期FCFF现值与终值现值计算为31.4亿欧元，随后称结合历史数据修正后最终为42.87亿欧元，但原文未展开非经营性资产调整过程。", "Section 4.2.4 first derives enterprise value of €3.14 billion, then revises it to €4.287 billion without disclosing the non-operating asset bridge."],
+  ["4.1节正文称曼联当前估值倍数为4.39，但同段落表格中曼联2024 EV/Revenue倍数为4.27；第5章又称目标价对应2025财年EV/Revenue倍数4.39。", "Section 4.1 cites 4.39x, while its table shows 4.27x for FY2024; Chapter 5 again uses 4.39x for the FY2025 target price."],
+  ["3.2.1节调整后EBITDA桥接项按原文列示的期间亏损、税项、净财务成本、摊销、折旧、例外项目相加，与原文给出的最终调整后EBITDA 182.8不符。", "The adjusted EBITDA bridge in Section 3.2.1 does not reconcile its listed components to the reported 182.8."],
+  ["4.2.3节FCFF五年现值逐年相加为86.2，但原文合计栏写5.72；后续企业价值计算又将5.72与25.68相加并以亿欧元口径表述，存在合计数与单位口径不一致。", "The annual FCFF present values sum to 86.2, but the total is shown as 5.72; the enterprise-value formula also mixes unit conventions."],
+  ["4.2.4节终值现值同一句中写作256.8百万欧元，同时括号中写“约25.68亿欧元”，两者单位换算不一致。", "Section 4.2.4 describes terminal-value present value as both €256.8 million and approximately €2.568 billion; the units do not reconcile."],]);
+
+export function translateText(text: string, locale: Locale): string {
+  return locale === "en" ? (english.get(text) ?? text) : text;
+}
