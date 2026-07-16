@@ -4,13 +4,14 @@
 
 ## 当前设计版本
 
-`main` 当前采用 Style A：Evidence-Led Investment Dossier。页面以冷调浅灰色哑光报纸材质为基础，使用克制的酒红色强调，并明确区分中文阅读字体、界面字体和数据字体的职责。
+当前分支采用 Style A 的更新版本：Evidence-Led Investment Dossier。页面以中性白底、理性深蓝强调和杂志式排版组织研究结论；中文采用本地衬线阅读字体，英文标题采用 Times 系列、正文采用修长无衬线字体。
 
 - 桌面端提供章节导航，移动端使用粘性跳转导航；结论—证据脊柱连接投资判断与对应证据。
 - 保留评级与目标价、核心投资逻辑、FY2021–FY2025 财务趋势、FCFF/同业估值、SWOT、催化剂、风险、分投资者建议和数据质量说明。
 - 桌面、移动端及键盘操作共享同步的章节选中状态。
 - 已覆盖 320px、834px 和 1440px 布局，以及 loading、error、retry 状态。
-- 中文衬线阅读字体通过本地字体栈回退，不依赖网络字体服务。
+- 支持简体中文与英文切换：选择会保存在浏览器中；英文视图使用展示层译文映射，不改写原始报告 JSON 或校验链路。
+- 字体全部通过本地字体栈回退，不依赖网络字体服务。
 
 其他独立设计分支保留完整历史并可单独运行：
 
@@ -69,6 +70,7 @@ src/app/api/report/route.ts         GET /api/report
 src/server/report-response.ts       API 成功和失败响应边界
 src/lib/report-client.ts            浏览器端 API 请求与错误处理
 src/lib/report-format.ts            币种、单位和百分比格式化
+src/lib/i18n.ts                     简中/英文界面文案与报告译文映射
 src/components/report-sections.tsx  财务、估值、SWOT 与投资建议区块
 src/app/page.tsx                    加载、成功、错误及重试状态与首页结构
 scripts/                            数据、API 和客户端验证脚本
@@ -85,7 +87,7 @@ manu_report.data.json
   → React 页面状态与报告组件
 ```
 
-页面不直接导入报告 JSON，也不在组件中写死报告数值。金额对象各自携带 `currency` 与可选 `unit`，页面按对象自身的 GBP、EUR 或 USD 口径展示。原报告中的数值矛盾不在展示层擅自修正，统一保留在 `data_quality_notes`。
+页面不直接导入报告 JSON，也不在组件中写死报告数值。金额对象各自携带 `currency` 与可选 `unit`，页面按对象自身的 GBP、EUR 或 USD 口径展示。原报告中的数值矛盾不在展示层擅自修正，统一保留在 `data_quality_notes`；英文页面的文案译文同样只位于展示层。
 
 ## 本地运行
 
@@ -113,6 +115,8 @@ npm run build
 - `test:client`：覆盖浏览器端成功、API 错误、非法 JSON 与金额格式化。
 - `lint`：检查 React、TypeScript 和项目代码规范。
 - `build`：执行生产编译、TypeScript 检查与路由生成。
+
+> 在部分 Windows 沙箱环境中，`npm run build` 可能在编译成功后因 `spawn EPERM` 无法启动后续工作进程；可用 `node node_modules/typescript/bin/tsc --noEmit` 配合上述数据、API、客户端与 lint 检查验证代码。
 
 ## 页面结构
 
